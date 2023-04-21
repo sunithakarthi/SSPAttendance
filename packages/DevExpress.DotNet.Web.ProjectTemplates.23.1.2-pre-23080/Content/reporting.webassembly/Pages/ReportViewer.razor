@@ -1,0 +1,27 @@
+@page "/reportviewer/"
+
+@using DevExpress.Blazor.Reporting
+@using DevExpress.Blazor.Reporting.Viewer.Internal.Services;
+@using DevExpress.XtraReports.UI
+@using DevExpressProjectTemplate.PredefinedReports
+@using DevExpressProjectTemplate.Services;
+
+<DxReportViewer @ref="reportViewer" Report="Report" RootCssClasses="w-100 h-100" />
+
+@code {
+    [Inject] HttpClient Http { get; set; }
+
+    DxReportViewer reportViewer;
+    XtraReport Report = new CachedDocumentSourceReport.Report();
+    List<string> RequiredFonts = new() {
+        "segoeui.ttf", "segoeuib.ttf", "segoeuii.ttf",
+        "segoeuil.ttf", "segoeuisl.ttf", "segoeuiz.ttf"
+    };
+
+    protected async override Task OnAfterRenderAsync(bool firstRender) {
+        if(firstRender) {
+            await FontLoader.LoadFonts(Http, RequiredFonts);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

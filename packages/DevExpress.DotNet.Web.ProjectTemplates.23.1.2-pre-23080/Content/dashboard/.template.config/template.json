@@ -1,0 +1,66 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "Developer Express Inc. ",
+    "classifications": [ "Web", "Dashboard", "C#" ],
+    "identity": "devexpress.dashboard.netcore.template",
+    "name": "DevExpress ASP.NET Core Dashboard Project",
+    "shortName": "dx.dashboard",
+    "description": "The DevExpress ASP.NET Core Dashboard starter template. You need to pass the DevExpress NuGet feed url as a required parameter to install libraries included with your DevExpress subscription. Go to https://nuget.devexpress.com/#feed-url and login to your account to obtain your feed url.",
+    "tags": {
+        "language": "C#"
+    },
+    "sourceName": "DevExpressProjectTemplate",
+    "preferNameDirectory": true,
+    "symbols":{
+        "nuget-feed": {
+            "type": "parameter",
+            "defaultValue": "",
+            "replaces":"DX_NUGET_FEED_URL",
+            "description": "Go to https://nuget.devexpress.com/#feed-url and login to your account to obtain your feed url."
+        },
+        "no-demo-data":{
+            "type": "parameter",
+            "dataType":"bool",
+            "defaultValue": "false",
+            "description": "Specify whether to include a sample dashboard and data."
+        },
+        "packages-version": {
+            "type": "parameter",
+            "dataType": "string",
+            "replaces": "PACKAGES_VERSION",
+            "defaultValue": "*",
+            "description": "Set a specific version of the DevExpress Dashboard NuGet and npm packages."
+        },
+		"framework": {
+			"type": "parameter",
+			"dataType": "choice",
+			"choices": [
+                {
+                    "choice": "net6.0",
+                    "description": "Target .Net6.0"
+                }, 
+				{
+                    "choice": "net7.0",
+                    "description": "Target .Net7.0"
+                }
+			],
+			"defaultValue": "net6.0",
+			"description": "The target framework for the project.",
+			"replaces": "net6.0"
+		}
+    },
+    "sources": [
+        {
+            "modifiers": [
+                {
+					"condition": "(nuget-feed == '')",
+					"exclude": [ "NuGet.config"]
+                },
+                {
+                    "condition": "(no-demo-data)",
+                    "exclude": [ "Data/**", "Models/**", "Data", "Models" ]
+                }
+            ]
+        }
+    ]
+}

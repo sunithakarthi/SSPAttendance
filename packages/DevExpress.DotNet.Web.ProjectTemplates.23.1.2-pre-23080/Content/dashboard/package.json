@@ -1,0 +1,10 @@
+{
+    "name": "DevExpressProjectTemplate",
+    "version": "1.0.0",
+    "private": true,
+    "dependencies": {
+        "devextreme": "PACKAGES_VERSION",
+        "@devexpress/analytics-core": "PACKAGES_VERSION",
+        "devexpress-dashboard": "PACKAGES_VERSION"
+    }
+}

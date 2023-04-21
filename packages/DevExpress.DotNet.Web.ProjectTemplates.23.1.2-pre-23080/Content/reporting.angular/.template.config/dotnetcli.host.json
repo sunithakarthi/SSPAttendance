@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json.schemastore.org/dotnetcli.host",
+  "symbolInfo": {
+    "AddJsonDataSourceService": {
+      "longName": "add-json-data-connection-storage",
+      "shortName": "ajs"
+    },
+    "AddObjectDataSourceProvider": {
+      "longName": "add-data-object",
+      "shortName": "ao"
+    },
+    "EnableClientRichEdit": {
+      "longName": "enable-rich-text-editor",
+      "shortName": "rte"
+    }        
+  }
+}

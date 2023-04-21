@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DevExpressProjectTemplate": {
+      "commandName": "Project",
+      "launchBrowser": true
+    }
+  }
+}
