@@ -13,11 +13,11 @@ namespace ACMESSPAttendance
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            ASPxlblwarningInfo.Text = "";
             string password = txt_Password.Text.Trim();
             txt_Password.Attributes.Add("value", password);
 
-            string selectedvalue = (!string.IsNullOrEmpty(ddl_course?.SelectedItem?.Value))?(ddl_course?.SelectedItem?.Value): "";
+            string selectedvalue = (!string.IsNullOrEmpty(ddl_course?.SelectedItem?.Value)) ? (ddl_course?.SelectedItem?.Value) : "";
 
             if (!string.IsNullOrEmpty(selectedvalue))
                 ddl_course.Items.FindByValue(selectedvalue).Selected = true;
@@ -39,6 +39,7 @@ namespace ACMESSPAttendance
                     {
                         ddl_course.Items.Add(new ListItem(rowSC["CourseName"].ToString(), Convert.ToInt32(rowSC["ccid"]).ToString()));
 
+
                     }
                     hasCourse = true;
                 }
@@ -46,7 +47,7 @@ namespace ACMESSPAttendance
                 {
                     hasCourse = false;
                 }
-                ddl_course.Items.Insert(0, new ListItem("--Please Select--", Guid.Empty.ToString()));
+                ddl_course.Items.Insert(0, new ListItem("--Please Select--", ""));
                 //ddl_course.Items.Clear();
 
             }
@@ -109,15 +110,24 @@ namespace ACMESSPAttendance
             }
             else
             {
-                isSuccessSignIn = AttendanceFunction.RecordSigninAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]));
-                if (isSuccessSignIn)
+               
+                if (ddl_course.Items.Count > 0 &&  !string.IsNullOrEmpty(ddl_course.SelectedItem.Value))
                 {
-                    ASPxlblInfo.Text = string.Format("You have successfully signed in at {0}.", Session[AttendanceFunction.SESS_TIMEIN].ToString());
-                    btn_Login.Enabled = true;
+                    isSuccessSignIn = AttendanceFunction.RecordSigninAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]));
+                    if (isSuccessSignIn)
+                    {
+                        ASPxlblInfo.Text = string.Format("You have successfully signed in at {0}.", Session[AttendanceFunction.SESS_TIMEIN].ToString());
+                        btn_Login.Enabled = true;
+                    }
+                    else
+                    {
+                        ASPxlblInfo.Text = "You sign in failed.";
+                    }
                 }
                 else
                 {
-                    ASPxlblInfo.Text = "You sign in failed.";
+                    ASPxlblInfo.Text = "";
+                    ASPxlblwarningInfo.Text = "Please select course from the dropdownlist";
                 }
             }
         }
@@ -128,14 +138,23 @@ namespace ACMESSPAttendance
             if (Session[AttendanceFunction.SESS_USERID] != null && Session[AttendanceFunction.SESS_TIMEIN] != null)
             {
                 bool isSuccessSignOut = false;
-                isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), !string.IsNullOrEmpty(ddl_course.SelectedItem.Value)?Convert.ToInt32(ddl_course.SelectedItem.Value):0);
-                if (isSuccessSignOut)
+                if (ddl_course.Items.Count > 0 && !string.IsNullOrEmpty(ddl_course.SelectedItem.Value))
                 {
-                    ASPxlblInfo.Text = string.Format("You have successfully signed out at {0}.", Session[AttendanceFunction.SESS_TIMEIN].ToString());
-                    btn_Logout.Enabled = true;
+                    ASPxlblwarningInfo.Text = "";
+                    isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
+                    if (isSuccessSignOut)
+                    {
+                        ASPxlblInfo.Text = string.Format("You have successfully signed out at {0}.", Session[AttendanceFunction.SESS_TIMEIN].ToString());
+                        btn_Logout.Enabled = true;
+                    }
+                    else
+                        ASPxlblInfo.Text = "You sign out failed.";
                 }
                 else
-                    ASPxlblInfo.Text = "You sign out failed.";
+                {
+                    ASPxlblInfo.Text = "";
+                    ASPxlblwarningInfo.Text = "Please select course from the dropdownlist";
+                }
             }
         }
 

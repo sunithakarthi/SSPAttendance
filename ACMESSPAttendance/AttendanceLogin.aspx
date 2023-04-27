@@ -68,40 +68,27 @@
                 </div>
                 <div class="form-group mb-3">
 
-                   <%-- <asp:Button ID="ASPxbtnCourse" runat="server" Text="Select Course" Font-Size="11pt"
-                        AutoPostBack="true" OnClick="ASPxbtnCourse_Click"></asp:Button>--%>
                     <asp:Button ID="ASPxbtnCourse" OnClick="ASPxbtnCourse_Click" runat="server"  CssClass="btn btn-primary btn-lg width-lg btn-rounded" style="text-align:center;padding:10px" Text="Select Course" Width="100%" ></asp:button>
                      <asp:DropDownList ID="ddl_course" runat="server" ValueType="System.String"  Font-Size="9pt" Font-Names="Frutiger" style="padding:5px;width:178px;height: 35px; border: 3px solid #8bc34a !important;">
                         <Items>
                         </Items>
                     </asp:DropDownList>
                 </div>
-              
+               &nbsp;<asp:Label ID="ASPxlblwarningInfo" runat="server" Text="" Font-Size="10pt" ForeColor="red">
+                </asp:Label>
 
                 &nbsp;<asp:Label ID="ASPxlblInfo" runat="server" Text="" Font-Size="10pt" ForeColor="Navy">
                 </asp:Label>
 
-                <%--<asp:Button ID="ASPxbtnSignin" runat="server" Text="Sign In" ClientEnabled="false" Font-Size="11pt"
-                    AutoPostBack="true" ></asp:Button>
-
-                <asp:Button ID="ASPxbtnSignOut" runat="server" Text="Sign Out" Font-Size="11pt"
-                    ClientEnabled="false" AutoPostBack="true" ></asp:Button>--%>
+              
 
                 <div class="form-group text-center mb-3">
-                    <%--  <div>
-                        <div class="flex-dir">
-                            <input type="checkbox" class="active-checkbox" />
-                            <label class="sign-in">Stay Signed in</label>
-                        </div>
-                        <a class="forget-sec" href="#">Forget Password?</a>
-                    </div>--%>
+                  
                     <asp:Button ID="btn_Login" runat="server"  AutoPostBack="true" onclick="ASPxbtnSignin_Click" CssClass="btn btn-primary btn-lg width-lg btn-rounded" Text="Sign In" Width="100%" ></asp:button>
 
                     <asp:Button ID="btn_Logout" runat="server"  AutoPostBack="true" onclick="ASPxbtnSignOut_Click"  CssClass="btn btn-primary btn-lg width-lg btn-rounded" Text="Sign Out" Width="100%" ></asp:button>
                 </div>
-                <%--  <div class="reg-div">
-                    <button class="student-reg">NOT A STUDENT?</button>
-                </div>--%>
+        
             </div>
         </asp:Panel>
     </div>
