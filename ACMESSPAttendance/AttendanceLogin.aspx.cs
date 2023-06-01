@@ -6,13 +6,14 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data;
 using ACMESSPAttendance.Utilities;
+using System.Web.Services;
 
 namespace ACMESSPAttendance
 {
     public partial class AttendanceLogin : System.Web.UI.Page
-    {
+    {       
         protected void Page_Load(object sender, EventArgs e)
-        {
+        {                   
             ASPxlblwarningInfo.Text = "";
             string password = txt_Password.Text.Trim();
             txt_Password.Attributes.Add("value", password);
@@ -20,14 +21,23 @@ namespace ACMESSPAttendance
             string selectedvalue = (!string.IsNullOrEmpty(ddl_course?.SelectedItem?.Value)) ? (ddl_course?.SelectedItem?.Value) : "";
 
             if (!string.IsNullOrEmpty(selectedvalue))
-                ddl_course.Items.FindByValue(selectedvalue).Selected = true;
+                ddl_course.Items.FindByValue(selectedvalue).Selected = true;            
 
+            if (!IsPostBack)
+            {
+                Session[AttendanceFunction.SESS_USERID] = Request.QueryString["userid"];                     
+                if (Session[AttendanceFunction.SESS_USERID] != null)
+                {
+                    txt_Password.AutoPostBack = false;
+                    PopulateCourse();
+                }
+            }
 
-        }
+        }        
 
         private bool PopulateCourse()
         {
-            bool hasCourse = false;
+            bool hasCourse = false;            
             if (Session[AttendanceFunction.SESS_USERID] != null)
             {
                 DataTable dtStudCourse = AttendanceFunction.GetStudentCourse(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]));
@@ -36,7 +46,7 @@ namespace ACMESSPAttendance
                 if (dtStudCourse != null && dtStudCourse.Rows.Count > 0)
                 {
                     foreach (DataRow rowSC in dtStudCourse.Rows)
-                    {
+                    {                        
                         ddl_course.Items.Add(new ListItem(rowSC["CourseName"].ToString(), Convert.ToInt32(rowSC["ccid"]).ToString()));
 
 
@@ -54,51 +64,59 @@ namespace ACMESSPAttendance
             return hasCourse;
         }
 
-        protected void ASPxbtnCourse_Click(object sender, EventArgs e)
+        protected void txt_Password_TextChanged(object sender, EventArgs e)
         {
-            string username = txt_Username.Text.Trim();
-            string password = txt_Password.Text.Trim();
-            bool isSchHolidayBlocked = false;
-            if (username.Length > 3 && password.Length > 4 && AttendanceFunction.ValidateUser(username, password, ref isSchHolidayBlocked))
+
+            if (HiddenField1.Value == "false") 
             {
-                if (!isSchHolidayBlocked)
+                string username = txt_Username.Text.Trim();
+                string password = txt_Password.Text.Trim();
+                bool isSchHolidayBlocked = false;
+                if (username.Length > 3 && password.Length > 4 && AttendanceFunction.ValidateUser(username, password, ref isSchHolidayBlocked))
                 {
-                    if (PopulateCourse())
+                    if (!isSchHolidayBlocked)
                     {
-                        if (AttendanceFunction.GetSignInStatus(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID])))
+                        if (PopulateCourse())
                         {
-                            btn_Login.Enabled = false;
-                            btn_Logout.Enabled = true;
+                            if (AttendanceFunction.GetSignInStatus(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID])))
+                            {
+                                //btn_Login.Enabled = false;
+                                //btn_Logout.Enabled = true;
+                            }
+                            else
+                            {
+                                //btn_Login.Enabled = true;
+                                //btn_Logout.Enabled = false;
+                            }
+                            ASPxlblInfo.Text = "";
                         }
                         else
                         {
-                            btn_Login.Enabled = true;
-                            btn_Logout.Enabled = false;
+                            ASPxlblInfo.Text = "Please contact your campus for assistance.";
                         }
-                        ASPxlblInfo.Text = "";
                     }
                     else
                     {
-                        ASPxlblInfo.Text = "Please contact your campus for assistance.";
+                        ASPxlblInfo.Text = "You could not sign in attendance during your campus holiday breaks.";
                     }
+                }
+                else if (username.Length <= 3)
+                {
+                    ASPxlblInfo.Text = "Please enter Username";
+                }
+                else if (password.Length <= 4)
+                {
+                    ASPxlblInfo.Text = "Please enter Password";
                 }
                 else
                 {
-                    ASPxlblInfo.Text = "You could not sign in attendance during your campus holiday breaks.";
+                    ASPxlblInfo.Text = "Your Username or Password is invalid.";
                 }
             }
-            else if (username.Length <= 3)
+            else 
             {
-                ASPxlblInfo.Text = "Please enter Username";
-            }
-            else if (password.Length <= 4)
-            {
-                ASPxlblInfo.Text = "Please enter Password";
-            }
-            else
-            {
-                ASPxlblInfo.Text = "Your Username or Password is invalid.";
-            }
+                HiddenField1.Value = "false";
+            }            
         }
 
         protected void ASPxbtnSignin_Click(object sender, EventArgs e)
@@ -117,7 +135,9 @@ namespace ACMESSPAttendance
                     if (isSuccessSignIn)
                     {
                         ASPxlblInfo.Text = string.Format("You have successfully signed in at {0}.", Session[AttendanceFunction.SESS_TIMEIN].ToString());
-                        btn_Login.Enabled = true;
+                        btn_Login.Enabled = false;
+                        btn_Logout.Enabled = true;
+                        ddl_course.Enabled = false;
                     }
                     else
                     {
@@ -145,7 +165,9 @@ namespace ACMESSPAttendance
                     if (isSuccessSignOut)
                     {
                         ASPxlblInfo.Text = string.Format("You have successfully signed out at {0}.", Session[AttendanceFunction.SESS_TIMEIN].ToString());
-                        btn_Logout.Enabled = true;
+                        btn_Logout.Enabled = false;
+                        btn_Login.Enabled = true;
+                        ddl_course.Enabled = true;
                     }
                     else
                         ASPxlblInfo.Text = "You sign out failed.";

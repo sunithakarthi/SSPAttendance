@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Attendance Login Page" Language="C#" MasterPageFile="~/LoginSite.Master" AutoEventWireup="true" CodeBehind="AttendanceLogin.aspx.cs" Inherits="ACMESSPAttendance.AttendanceLogin" %>
+﻿<%@ Page  Title="Attendance Login Page" Language="C#" MasterPageFile="~/LoginSite.Master" AutoEventWireup="true" CodeBehind="AttendanceLogin.aspx.cs" Inherits="ACMESSPAttendance.AttendanceLogin" %>
 <asp:Content ID="HeaderContent" ContentPlaceHolderID="HeaderContent" runat="server">
     <link href="Content/login.css" rel="stylesheet" />
     <style type="text/css">
@@ -35,11 +35,17 @@
                 $("#divFolder").slideUp("slow");
             }
         }
+    </script>    
+
+    <script>
+        function setButtonClicked() {
+            document.getElementById('<%= HiddenField1.ClientID %>').value = 'true';
+        }
     </script>
 
-</asp:Content>
+</asp:Content>   
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
-
+   
 
     <div class="bgimag">
 
@@ -61,16 +67,17 @@
                 </div>
                 <div class="form-group mb-3">
                     <label for="password">Password</label>
-                    <asp:TextBox ID="txt_Password" runat="server"  Password="true" TextMode="Password" CssClass="form-control" />
+                    <asp:TextBox ID="txt_Password" runat="server"  Password="true" TextMode="Password" CssClass="form-control" AutoPostBack="true" ClientIDMode="Static"  OnTextChanged="txt_Password_TextChanged" />
+                    <asp:HiddenField ID="HiddenField1" runat="server" Value="false" />
                     <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server"
                         ControlToValidate="txt_Password" ErrorMessage="Please enter your password"
                         ForeColor="Red"></asp:RequiredFieldValidator>
                 </div>
                 <div class="form-group mb-3">
-
-                    <asp:Button ID="ASPxbtnCourse" OnClick="ASPxbtnCourse_Click" runat="server"  CssClass="btn btn-primary btn-lg width-lg btn-rounded" style="text-align:center;padding:10px" Text="Select Course" Width="100%" ></asp:button>
+                    <label>Select Course </label>
+                     <%--<asp:Button ID="ASPxbtnCourse" OnClick="ASPxbtnCourse_Click" runat="server"  CssClass="btn btn-primary btn-lg width-lg btn-rounded" style="text-align:center;padding:10px" Text="Select Course" Width="100%" ></asp:button>--%>
                      <asp:DropDownList ID="ddl_course" runat="server" ValueType="System.String"  Font-Size="9pt" Font-Names="Frutiger" style="padding:5px;width:178px;height: 35px; border: 3px solid #8bc34a !important;">
-                        <Items>
+                        <Items>                            
                         </Items>
                     </asp:DropDownList>
                 </div>
@@ -84,9 +91,9 @@
 
                 <div class="form-group text-center mb-3">
                   
-                    <asp:Button ID="btn_Login" runat="server"  AutoPostBack="true" onclick="ASPxbtnSignin_Click" CssClass="btn btn-primary btn-lg width-lg btn-rounded" Text="Sign In" Width="100%" ></asp:button>
+                    <asp:Button ID="btn_Login" runat="server"  AutoPostBack="true" ClientIDMode="Static" onclick="ASPxbtnSignin_Click" OnClientClick="setButtonClicked();" CssClass="btn btn-primary btn-lg width-lg btn-rounded" Text="Sign In" Width="100%" ></asp:button>
 
-                    <asp:Button ID="btn_Logout" runat="server"  AutoPostBack="true" onclick="ASPxbtnSignOut_Click"  CssClass="btn btn-primary btn-lg width-lg btn-rounded" Text="Sign Out" Width="100%" ></asp:button>
+                    <asp:Button ID="btn_Logout" runat="server"  AutoPostBack="true" ClientIDMode="Static" onclick="ASPxbtnSignOut_Click" OnClientClick="setButtonClicked();"  CssClass="btn btn-primary btn-lg width-lg btn-rounded" Text="Sign Out" Width="100%" ></asp:button>
                 </div>
         
             </div>
