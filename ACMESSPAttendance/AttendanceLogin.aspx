@@ -22,6 +22,9 @@
             border-radius: 4px !important;
             font-size: 12px;
         }
+        .labeltxt{
+            color:#8bc34a;
+        }
     </style>
     <script type="text/javascript">
         function onClickCollapseInstructionChanges(s, e) {
@@ -59,14 +62,14 @@
                     <div style="padding-bottom: 10px;"></div>
                 </asp:Panel>
                 <div class="form-group mb-3">
-                    <label for="emailaddress">Email / UserName</label>
+                    <label for="emailaddress" class="labeltxt">Email / UserName</label>
                     <asp:TextBox ID="txt_Username" runat="server" CssClass="form-control" />
                     <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server"
                         ControlToValidate="txt_Username" ErrorMessage="Please enter your email / username"
                         ForeColor="Red"></asp:RequiredFieldValidator>
                 </div>
                 <div class="form-group mb-3">
-                    <label for="password">Password</label>
+                    <label for="password" class="labeltxt">Password</label>
                     <asp:TextBox ID="txt_Password" runat="server"  Password="true" TextMode="Password" CssClass="form-control" AutoPostBack="true" ClientIDMode="Static"  OnTextChanged="txt_Password_TextChanged" />
                     <asp:HiddenField ID="HiddenField1" runat="server" Value="false" />
                     <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server"
@@ -74,7 +77,7 @@
                         ForeColor="Red"></asp:RequiredFieldValidator>
                 </div>
                 <div class="form-group mb-3">
-                    <label>Select Course </label>
+                    <label class="labeltxt">Select Course </label>
                      <%--<asp:Button ID="ASPxbtnCourse" OnClick="ASPxbtnCourse_Click" runat="server"  CssClass="btn btn-primary btn-lg width-lg btn-rounded" style="text-align:center;padding:10px" Text="Select Course" Width="100%" ></asp:button>--%>
                      <asp:DropDownList ID="ddl_course" runat="server" ValueType="System.String"  Font-Size="9pt" Font-Names="Frutiger" style="padding:5px;width:178px;height: 35px; border: 3px solid #8bc34a !important;">
                         <Items>                            
