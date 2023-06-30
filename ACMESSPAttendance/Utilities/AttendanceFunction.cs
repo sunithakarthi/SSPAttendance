@@ -436,7 +436,7 @@ namespace ACMESSPAttendance.Utilities
             return success;
         }
 
-        private static DateTime GetCurrentTimebyUserTimeZone(int UserID)
+        public static DateTime GetCurrentTimebyUserTimeZone(int UserID)
         {
             //The default time is EST, which get from server time.
             DateTime curTime = DateTime.Now;

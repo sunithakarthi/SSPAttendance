@@ -45,6 +45,13 @@
             document.getElementById('<%= HiddenField1.ClientID %>').value = 'true';
         }
     </script>
+    <script>
+        function stopTimer(){
+           var timerValue = $find('<%= Timer1.ClientID %>');
+           timerValue._stopTimer();
+           var wait = timerValue.get_interval();
+        }
+    </script>
 
 </asp:Content>   
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
@@ -70,27 +77,32 @@
                 </div>
                 <div class="form-group mb-3">
                     <label for="password" class="labeltxt">Password</label>
-                    <asp:TextBox ID="txt_Password" runat="server"  Password="true" TextMode="Password" CssClass="form-control" AutoPostBack="true" ClientIDMode="Static"  OnTextChanged="txt_Password_TextChanged" />
+                    <asp:TextBox ID="txt_Password" runat="server"  Password="true" TextMode="Password" CssClass="form-control" AutoPostBack="true" ClientIDMode="Static" />
                     <asp:HiddenField ID="HiddenField1" runat="server" Value="false" />
                     <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server"
                         ControlToValidate="txt_Password" ErrorMessage="Please enter your password"
                         ForeColor="Red"></asp:RequiredFieldValidator>
                 </div>
-                <div class="form-group mb-3">
-                    <label class="labeltxt">Select Course </label>
-                     <%--<asp:Button ID="ASPxbtnCourse" OnClick="ASPxbtnCourse_Click" runat="server"  CssClass="btn btn-primary btn-lg width-lg btn-rounded" style="text-align:center;padding:10px" Text="Select Course" Width="100%" ></asp:button>--%>
+                <%--<div class="form-group mb-3">
+                    <label class="labeltxt">Select Course </label>                     
                      <asp:DropDownList ID="ddl_course" runat="server" ValueType="System.String"  Font-Size="9pt" Font-Names="Frutiger" style="padding:5px;width:178px;height: 35px; border: 3px solid #8bc34a !important;">
                         <Items>                            
                         </Items>
                     </asp:DropDownList>
-                </div>
+                </div>--%>
+                <%--<asp:Button ID="ASPxbtnCourse" OnClick="ASPxbtnCourse_Click" runat="server"  CssClass="btn btn-primary btn-lg width-lg btn-rounded" style="text-align:center;padding:10px" Text="Select Course" Width="100%" ></asp:button>--%>
                &nbsp;<asp:Label ID="ASPxlblwarningInfo" runat="server" Text="" Font-Size="10pt" ForeColor="red">
                 </asp:Label>
 
-                &nbsp;<asp:Label ID="ASPxlblInfo" runat="server" Text="" Font-Size="10pt" ForeColor="Navy">
+                &nbsp;<asp:Label ID="ASPxlblInfo" runat="server" Text="" Font-Size="10pt" ForeColor="#99cc00">
                 </asp:Label>
-
-              
+               
+                <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+                    <ContentTemplate>
+                        <asp:Label ID="lblTime" runat="server" ForeColor="OrangeRed" />
+                        <asp:Timer ID="Timer1" runat="server" OnTick="GetTime" Interval="1000" Enabled="false" />
+                    </ContentTemplate>
+                </asp:UpdatePanel>
 
                 <div class="form-group text-center mb-3">
                   
