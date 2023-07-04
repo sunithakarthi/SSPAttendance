@@ -45,14 +45,31 @@
             document.getElementById('<%= HiddenField1.ClientID %>').value = 'true';
         }
     </script>
-    <script>
-        function stopTimer(){
-           var timerValue = $find('<%= Timer1.ClientID %>');
-           timerValue._stopTimer();
-           var wait = timerValue.get_interval();
+
+    <script type="text/javascript">
+        var intervalId;
+        function stopTimer() {       
+            var value = $("#MainContent_timer").text();    
+            document.getElementById("<%=hdshowtimer.ClientID %>").value = value;
+            clearInterval(intervalId);
+        }
+        function countdown() {            
+            var startTime = new Date().getTime(); 
+
+            intervalId = setInterval(function () {
+                var currentTime = new Date().getTime(); 
+                var elapsedTime = currentTime - startTime; 
+                
+                var hours = Math.floor(elapsedTime / (1000 * 60 * 60));
+            var minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+            var formattedTime = hours.toString().padStart(2, "0") + ":" +
+                minutes.toString().padStart(2, "0") + ":" +
+                seconds.toString().padStart(2, "0");       
+                document.getElementById('<%= timer.ClientID %>').innerHTML = formattedTime;                
+        }, 1000); 
         }
     </script>
-
 </asp:Content>   
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
    
@@ -96,19 +113,15 @@
 
                 &nbsp;<asp:Label ID="ASPxlblInfo" runat="server" Text="" Font-Size="10pt" ForeColor="#99cc00">
                 </asp:Label>
-               
-                <asp:UpdatePanel ID="UpdatePanel1" runat="server">
-                    <ContentTemplate>
-                        <asp:Label ID="lblTime" runat="server" ForeColor="OrangeRed" />
-                        <asp:Timer ID="Timer1" runat="server" OnTick="GetTime" Interval="1000" Enabled="false" />
-                    </ContentTemplate>
-                </asp:UpdatePanel>
-
+                               
+                <br />
+                <div id="timer" runat="server" style="color:Orange; text-align:center;"></div>        
+                <asp:HiddenField ID="hdshowtimer" runat="server" />               
                 <div class="form-group text-center mb-3">
                   
                     <asp:Button ID="btn_Login" runat="server"  AutoPostBack="true" ClientIDMode="Static" onclick="ASPxbtnSignin_Click" OnClientClick="setButtonClicked();" CssClass="btn btn-primary btn-lg width-lg btn-rounded" Text="Sign In" Width="100%" ></asp:button>
 
-                    <asp:Button ID="btn_Logout" runat="server"  AutoPostBack="true" ClientIDMode="Static" onclick="ASPxbtnSignOut_Click" OnClientClick="setButtonClicked();"  CssClass="btn btn-primary btn-lg width-lg btn-rounded" Text="Sign Out" Width="100%" ></asp:button>
+                    <asp:Button ID="btn_Logout" runat="server"  AutoPostBack="true" ClientIDMode="Static" onclick="ASPxbtnSignOut_Click" OnClientClick="stopTimer();"  CssClass="btn btn-primary btn-lg width-lg btn-rounded" Text="Sign Out" Width="100%" ></asp:button>
                 </div>
         
             </div>

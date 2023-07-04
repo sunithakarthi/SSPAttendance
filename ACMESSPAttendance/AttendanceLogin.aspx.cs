@@ -19,7 +19,7 @@ namespace ACMESSPAttendance
             ASPxlblwarningInfo.Text = "";
             string password = txt_Password.Text.Trim();
             txt_Password.Attributes.Add("value", password);
-
+            timer.InnerText = Request.Form[hdshowtimer.UniqueID];
             if (!IsPostBack)
             {
                 int userid = Convert.ToInt32(Request.QueryString["userid"]);
@@ -28,7 +28,7 @@ namespace ACMESSPAttendance
                     FillLogin(userid);
                 }
             }
-
+            
             //string selectedvalue = (!string.IsNullOrEmpty(ddl_course?.SelectedItem?.Value)) ? (ddl_course?.SelectedItem?.Value) : "";
 
             //if (!string.IsNullOrEmpty(selectedvalue))
@@ -79,13 +79,7 @@ namespace ACMESSPAttendance
                 exc.Message.ToString();                
             }
         }
-
-        protected void GetTime(object sender, EventArgs e)
-        {
-            int userid = Convert.ToInt32(Request.QueryString["userid"]);
-            DateTime currentTime = AttendanceFunction.GetCurrentTimebyUserTimeZone(userid);
-            lblTime.Text = currentTime.ToString("hh: mm:ss tt");
-        }
+        
 
         //private bool PopulateCourse()
         //{
@@ -195,10 +189,11 @@ namespace ACMESSPAttendance
                             {
                                 ASPxlblInfo.Text = string.Format("You have successfully signed in at {0}.", Session[AttendanceFunction.SESS_TIMEIN].ToString());
                                 btn_Login.Enabled = false;
-                                btn_Logout.Enabled = true;
-                                Timer1.Enabled = true;
-                                //ddl_course.Enabled = false;
-                            }
+                                btn_Logout.Enabled = true;                            
+                                Page.ClientScript.RegisterStartupScript(this.GetType(), "countdown", "countdown();", true);
+                                
+                            //ddl_course.Enabled = false;
+                        }
                             else
                             {
                                 ASPxlblInfo.Text = "You sign in failed.";
@@ -238,26 +233,25 @@ namespace ACMESSPAttendance
                 bool isSuccessSignOut = false;
                 //if (ddl_course.Items.Count > 0 && !string.IsNullOrEmpty(ddl_course.SelectedItem.Value))
                 //{
-                    ASPxlblwarningInfo.Text = "";
+                ASPxlblwarningInfo.Text = "";
                 //isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
                 isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), 0);
                 if (isSuccessSignOut)
-                    {
-                        ASPxlblInfo.Text = string.Format("You have successfully signed out at {0}.", Session[AttendanceFunction.SESS_TIMEIN].ToString());
-                        btn_Logout.Enabled = false;
-                        btn_Login.Enabled = true;
-                        Page.ClientScript.RegisterStartupScript(this.GetType(), "stopTimer", "stopTimer();", true);
+                {
+                    ASPxlblInfo.Text = string.Format("You have successfully signed out at {0}.", Session[AttendanceFunction.SESS_TIMEIN].ToString());
+                    btn_Logout.Enabled = false;
+                    btn_Login.Enabled = true;                    
                     //ddl_course.Enabled = true;
                 }
-                    else
-                        ASPxlblInfo.Text = "You sign out failed.";
-                }
                 else
-                {
-                    ASPxlblInfo.Text = "";
-                    ASPxlblwarningInfo.Text = "Please select course from the dropdownlist";
-                }
-            }        
+                    ASPxlblInfo.Text = "You sign out failed.";
+            }
+            else
+            {
+                ASPxlblInfo.Text = "";
+                ASPxlblwarningInfo.Text = "Please select course from the dropdownlist";
+            }
+        }        
 
     }
 }
