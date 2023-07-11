@@ -74,7 +74,7 @@
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
    
 
-    <div class="bgimag">
+    <div>
 
 
         <asp:Panel ID="pnl_Login" runat="server" DefaultButton="btn_Login" Class="loginpnl">
@@ -115,7 +115,7 @@
                 </asp:Label>
                                
                 <br />
-                <div id="timer" runat="server" style="color:Orange; text-align:center;"></div>        
+                <div id="timer" runat="server" class="head-title" ></div>        
                 <asp:HiddenField ID="hdshowtimer" runat="server" />               
                 <div class="form-group text-center mb-3">
                   
