@@ -9,6 +9,12 @@ using ACMESSPAttendance.Utilities;
 using System.Web.Services;
 using System.Data.SqlClient;
 using System.Configuration;
+using ACMESSPAttendance.Model;
+using ACMESSPAttendance.Common;
+using System.Text;
+using ACMESSPAttendance.SAMLUtilities.Data;
+using ACMESSPAttendance.SAMLUtilities.Helpers;
+using ACMESSPAttendance.SAMLUtilities;
 
 namespace ACMESSPAttendance
 {
@@ -26,6 +32,7 @@ namespace ACMESSPAttendance
                 if (userid != 0)
                 {
                     FillLogin(userid);
+                    SetUserSession();
                 }
             }
             
@@ -189,11 +196,18 @@ namespace ACMESSPAttendance
                             {
                                 ASPxlblInfo.Text = string.Format("You have successfully signed in at {0}.", Session[AttendanceFunction.SESS_TIMEIN].ToString());
                                 btn_Login.Enabled = false;
-                                btn_Logout.Enabled = true;                            
+                                btn_Logout.Enabled = true;
+                                btn_myALOCC.Visible = true;
                                 Page.ClientScript.RegisterStartupScript(this.GetType(), "countdown", "countdown();", true);
-                                
-                            //ddl_course.Enabled = false;
-                        }
+
+                                UserViewModel usermodel = UserManagement.GetUser();
+                                if(usermodel == null)
+                                {
+                                    SetUserSession();
+                                }
+
+                                //ddl_course.Enabled = false;
+                            }
                             else
                             {
                                 ASPxlblInfo.Text = "You sign in failed.";
@@ -240,7 +254,8 @@ namespace ACMESSPAttendance
                 {
                     ASPxlblInfo.Text = string.Format("You have successfully signed out at {0}.", Session[AttendanceFunction.SESS_TIMEIN].ToString());
                     btn_Logout.Enabled = false;
-                    btn_Login.Enabled = true;                    
+                    btn_Login.Enabled = true;
+                    btn_myALOCC.Visible = false;
                     //ddl_course.Enabled = true;
                 }
                 else
@@ -251,7 +266,26 @@ namespace ACMESSPAttendance
                 ASPxlblInfo.Text = "";
                 ASPxlblwarningInfo.Text = "Please select course from the dropdownlist";
             }
-        }        
+        }
 
+        protected void ASPxbtnmyALOCC_Click(object sender, EventArgs e) 
+        {
+            Response.Redirect("Canvas.aspx");
+        }
+        
+        bool SetUserSession()
+        {
+            bool isSuccess = false;
+            var user = new UserViewModel();
+            user = UserManagement.Login(txt_Username.Text, txt_Password.Text, Request.UserHostAddress);
+
+            user = UserManagement.Check2ProduceUserData(user);
+            if (user != null)
+            {
+                Session[Utility.SessionUserNameKey] = user;
+                isSuccess = true;
+            }
+            return isSuccess;
+        }
     }
 }

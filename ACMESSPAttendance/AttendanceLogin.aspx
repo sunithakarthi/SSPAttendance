@@ -25,6 +25,16 @@
         .labeltxt{
             color:#8bc34a;
         }
+
+        .btn-centre{
+            margin:0 auto;
+            display: block;
+        }
+
+        .margin20{
+            margin: 20px 0px;
+        }
+
     </style>
     <script type="text/javascript">
         function onClickCollapseInstructionChanges(s, e) {
@@ -69,7 +79,26 @@
                 document.getElementById('<%= timer.ClientID %>').innerHTML = formattedTime;                
         }, 1000); 
         }
+
+
+
+
     </script>
+
+    <script type="text/javascript">
+
+        $(function () {
+            $("input[type='submit']").click(function () {
+                if ($(this).hasClass('changeTarget')) {
+                    window.document.forms[0].target = '_blank';
+                } else {
+                    window.document.forms[0].target = '_self';
+                }
+            });
+        });
+    </script>
+
+
 </asp:Content>   
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
    
@@ -122,6 +151,10 @@
                     <asp:Button ID="btn_Login" runat="server"  AutoPostBack="true" ClientIDMode="Static" onclick="ASPxbtnSignin_Click" OnClientClick="setButtonClicked();" CssClass="btn btn-primary btn-lg width-lg btn-rounded" Text="Sign In" Width="100%" ></asp:button>
 
                     <asp:Button ID="btn_Logout" runat="server"  AutoPostBack="true" ClientIDMode="Static" onclick="ASPxbtnSignOut_Click" OnClientClick="stopTimer();"  CssClass="btn btn-primary btn-lg width-lg btn-rounded" Text="Sign Out" Width="100%" ></asp:button>
+                </div>
+
+                <div class="margin20">
+                    <asp:Button ID="btn_myALOCC" runat="server" onclick="ASPxbtnmyALOCC_Click" CssClass="btn btn-primary btn-lg width-lg btn-rounded btn-centre changeTarget" Text="myAOLCC" Width="100%" Visible="false" ></asp:button>
                 </div>
         
             </div>
