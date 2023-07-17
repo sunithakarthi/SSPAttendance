@@ -15,6 +15,8 @@ using System.Text;
 using ACMESSPAttendance.SAMLUtilities.Data;
 using ACMESSPAttendance.SAMLUtilities.Helpers;
 using ACMESSPAttendance.SAMLUtilities;
+using System.Web.UI.HtmlControls;
+using Dapper;
 
 namespace ACMESSPAttendance
 {
@@ -32,25 +34,9 @@ namespace ACMESSPAttendance
                 if (userid != 0)
                 {
                     FillLogin(userid);
-                    SetUserSession();
                 }
+                GetStudentAttendanceDetails();
             }
-            
-            //string selectedvalue = (!string.IsNullOrEmpty(ddl_course?.SelectedItem?.Value)) ? (ddl_course?.SelectedItem?.Value) : "";
-
-            //if (!string.IsNullOrEmpty(selectedvalue))
-            //    ddl_course.Items.FindByValue(selectedvalue).Selected = true;            
-
-            //if (!IsPostBack)
-            //{
-            //    Session[AttendanceFunction.SESS_USERID] = Request.QueryString["userid"];                     
-            //    if (Session[AttendanceFunction.SESS_USERID] != null)
-            //    {
-            //        txt_Password.AutoPostBack = false;
-            //        PopulateCourse();
-            //    }
-            //}
-
         }
 
         private void FillLogin(int id)
@@ -67,7 +53,7 @@ namespace ACMESSPAttendance
                         SqlDataReader dreader = cmd.ExecuteReader();
                         if (dreader.HasRows && dreader.Read())
                         {
-                            if (dreader.GetString(0) != null)
+                            if (dreader[0] != DBNull.Value)
                             {
                                 txt_Username.Text = dreader.GetString(0);
                             }
@@ -75,7 +61,10 @@ namespace ACMESSPAttendance
                             {
                                 txt_Username.Text = dreader.GetString(2);
                             }
-                            txt_Password.Attributes["value"] = dreader.GetString(1);                            
+                            string password = dreader.GetString(1);
+                            txt_Password.Attributes.Add("value", password);
+                            // txt_Password.Text = password;
+                            SetUserSession(txt_Username.Text?.Trim(), password?.Trim());
                         }
                     }
                     conn.Close();
@@ -86,91 +75,6 @@ namespace ACMESSPAttendance
                 exc.Message.ToString();                
             }
         }
-        
-
-        //private bool PopulateCourse()
-        //{
-        //    bool hasCourse = false;            
-        //    if (Session[AttendanceFunction.SESS_USERID] != null)
-        //    {
-        //        DataTable dtStudCourse = AttendanceFunction.GetStudentCourse(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]));
-
-        //        ddl_course.Items.Clear();
-        //        if (dtStudCourse != null && dtStudCourse.Rows.Count > 0)
-        //        {
-        //            foreach (DataRow rowSC in dtStudCourse.Rows)
-        //            {                        
-        //                ddl_course.Items.Add(new ListItem(rowSC["CourseName"].ToString(), Convert.ToInt32(rowSC["ccid"]).ToString()));
-
-
-        //            }
-        //            hasCourse = true;
-        //        }
-        //        else
-        //        {
-        //            hasCourse = false;
-        //        }
-        //        ddl_course.Items.Insert(0, new ListItem("--Please Select--", ""));
-        //        //ddl_course.Items.Clear();
-
-        //    }
-        //    return hasCourse;
-        //}
-
-        //protected void txt_Password_TextChanged(object sender, EventArgs e)
-        //{
-
-        //    if (HiddenField1.Value == "false") 
-        //    {
-        //        string username = txt_Username.Text.Trim();
-        //        string password = txt_Password.Text.Trim();
-        //        bool isSchHolidayBlocked = false;
-        //        if (username.Length > 3 && password.Length > 4 && AttendanceFunction.ValidateUser(username, password, ref isSchHolidayBlocked))
-        //        {
-        //            if (!isSchHolidayBlocked)
-        //            {
-        //                if (PopulateCourse())
-        //                {
-        //                    if (AttendanceFunction.GetSignInStatus(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID])))
-        //                    {
-        //                        //btn_Login.Enabled = false;
-        //                        //btn_Logout.Enabled = true;
-        //                    }
-        //                    else
-        //                    {
-        //                        //btn_Login.Enabled = true;
-        //                        //btn_Logout.Enabled = false;
-        //                    }
-        //                    ASPxlblInfo.Text = "";
-        //                }
-        //                else
-        //                {
-        //                    ASPxlblInfo.Text = "Please contact your campus for assistance.";
-        //                }
-        //            }
-        //            else
-        //            {
-        //                ASPxlblInfo.Text = "You could not sign in attendance during your campus holiday breaks.";
-        //            }
-        //        }
-        //        else if (username.Length <= 3)
-        //        {
-        //            ASPxlblInfo.Text = "Please enter Username";
-        //        }
-        //        else if (password.Length <= 4)
-        //        {
-        //            ASPxlblInfo.Text = "Please enter Password";
-        //        }
-        //        else
-        //        {
-        //            ASPxlblInfo.Text = "Your Username or Password is invalid.";
-        //        }
-        //    }
-        //    else 
-        //    {
-        //        HiddenField1.Value = "false";
-        //    }            
-        //}
 
         protected void ASPxbtnSignin_Click(object sender, EventArgs e)
         {
@@ -185,6 +89,9 @@ namespace ACMESSPAttendance
                     if (AttendanceFunction.GetSignInStatus(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID])))
                     {
                         ASPxlblInfo.Text = "You did not sign out yet. Please sign out first.";
+                        btn_myALOCC.Visible = true;
+                        SetUserSession(username, password);
+                        GetStudentAttendanceDetails();
                     }
                     else
                     {
@@ -200,24 +107,15 @@ namespace ACMESSPAttendance
                                 btn_myALOCC.Visible = true;
                                 Page.ClientScript.RegisterStartupScript(this.GetType(), "countdown", "countdown();", true);
 
-                                UserViewModel usermodel = UserManagement.GetUser();
-                                if(usermodel == null)
-                                {
-                                    SetUserSession();
-                                }
+                                SetUserSession(username, password);
+                            GetStudentAttendanceDetails();
 
-                                //ddl_course.Enabled = false;
-                            }
+                            //ddl_course.Enabled = false;
+                        }
                             else
                             {
                                 ASPxlblInfo.Text = "You sign in failed.";
                             }
-                        //}
-                        //else
-                        //{
-                        //    ASPxlblInfo.Text = "";
-                        //    ASPxlblwarningInfo.Text = "Please select course from the dropdownlist";
-                        //}
                     }
                 }
                 else
@@ -257,6 +155,8 @@ namespace ACMESSPAttendance
                     btn_Login.Enabled = true;
                     btn_myALOCC.Visible = false;
                     //ddl_course.Enabled = true;
+                    GetStudentAttendanceDetails();
+                    ClearSession();
                 }
                 else
                     ASPxlblInfo.Text = "You sign out failed.";
@@ -264,8 +164,14 @@ namespace ACMESSPAttendance
             else
             {
                 ASPxlblInfo.Text = "";
-                ASPxlblwarningInfo.Text = "Please select course from the dropdownlist";
+                ASPxlblwarningInfo.Text = "please sign in";
+                ClearSession();
             }
+        }
+
+        void ClearSession()
+        {
+            Session.Remove(Utility.SessionUserNameKey);
         }
 
         protected void ASPxbtnmyALOCC_Click(object sender, EventArgs e) 
@@ -273,11 +179,12 @@ namespace ACMESSPAttendance
             Response.Redirect("Canvas.aspx");
         }
         
-        bool SetUserSession()
+        bool SetUserSession(string userName, string password)
         {
+            ClearSession();
             bool isSuccess = false;
             var user = new UserViewModel();
-            user = UserManagement.Login(txt_Username.Text, txt_Password.Text, Request.UserHostAddress);
+            user = UserManagement.Login(userName, password, Request.UserHostAddress);
 
             user = UserManagement.Check2ProduceUserData(user);
             if (user != null)
@@ -287,5 +194,105 @@ namespace ACMESSPAttendance
             }
             return isSuccess;
         }
+
+        private void GetStudentAttendanceDetails()
+        {
+            try
+
+            {
+                var userdetails = UserManagement.GetUser();
+                if (userdetails != null)
+                {
+                    SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["acme_aol_test_CS"].ConnectionString);
+                    using (var db = con)
+                    {
+                        var param = new DynamicParameters();
+
+                        param.Add("@UserID", userdetails.UserId);
+
+                        try
+                        {
+                            //sp_ProgramDetail
+                            using (var results = db.QueryMultiple("sp_GetAttendanceDetailsByUserID_SSP", param, commandType: System.Data.CommandType.StoredProcedure))
+                            {
+                                var result = results.Read<AttendanceViewModel>().ToList();
+                                if (result == null)
+                                    Response.Redirect("/");
+                                rpt_Records.DataSource = result;
+                                rpt_Records.DataBind();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message?.ToString());
+                        }
+                    }
+                }
+                else
+                {
+                    rpt_Records.DataSource = new List<AttendanceViewModel>();
+                    rpt_Records.DataBind();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Response.Redirect("/");
+            }
+        }
+
+        protected void rpt_Records_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        {
+            var currentUser = UserManagement.GetUser();
+            if (currentUser != null)
+            {
+                if (rpt_Records.Items.Count < 1)
+                {
+                    if (e.Item.ItemType == ListItemType.Footer)
+                    {
+                        HtmlGenericControl dvNoRec = e.Item.FindControl("dvNoRecords") as HtmlGenericControl;
+                        if (dvNoRec != null)
+                        {
+                            dvNoRec.Visible = true;
+                        }
+                    }
+                }
+
+                if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+                {
+                    var lit_Date = (Literal)e.Item.FindControl("lit_Date");
+                    var lit_TimeIn = (Literal)e.Item.FindControl("lit_TimeIn");
+                    var lit_TimeOut = (Literal)e.Item.FindControl("lit_TimeOut");
+                    var lit_TimeStudied = (Literal)e.Item.FindControl("lit_TimeStudied");
+
+                    var record = (AttendanceViewModel)e.Item.DataItem;
+                    if (record != null)
+                    {
+                        lit_Date.Text = record.Date.ToString("MM/dd/yyyy");
+
+                        lit_TimeIn.Text = record.TimeIn;
+
+                        lit_TimeOut.Text = record.TimeOut;
+
+                        lit_TimeStudied.Text = record.TimeStudied;
+                    }
+                }
+            }
+            else
+            {
+                if (rpt_Records.Items.Count < 1)
+                {
+                    if (e.Item.ItemType == ListItemType.Footer)
+                    {
+                        HtmlGenericControl dvNoRec = e.Item.FindControl("dvNoRecords") as HtmlGenericControl;
+                        if (dvNoRec != null)
+                        {
+                            dvNoRec.Visible = true;
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }
