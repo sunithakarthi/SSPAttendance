@@ -30,10 +30,18 @@ namespace ACMESSPAttendance
             timer.InnerText = Request.Form[hdshowtimer.UniqueID];
             if (!IsPostBack)
             {
-                int userid = Convert.ToInt32(Request.QueryString["userid"]);
-                if (userid != 0)
+                var resetStatus = Request.QueryString["resetattendancepage"];
+                if(resetStatus != null && bool.Parse(resetStatus) == true)
                 {
-                    FillLogin(userid);
+                    resetAttendancePage();
+                }
+                else
+                {
+                    int userid = Convert.ToInt32(Request.QueryString["userid"]);
+                    if (userid != 0)
+                    {
+                        FillLogin(userid);
+                    }
                 }
                 GetStudentAttendanceDetails();
             }
@@ -41,6 +49,7 @@ namespace ACMESSPAttendance
 
         private void FillLogin(int id)
         {
+            string password = "", username = "";
             string sqlText = "Select ud.AOLEmail,u.Password, u.Username from ACME_MAIN_TEST.dbo.[User] u join ACME_AOL_TEST.dbo.UserDetail ud on ud.UserID = u.UserID Where u.UserID = @UserID";
             try
             {                
@@ -55,17 +64,18 @@ namespace ACMESSPAttendance
                         {
                             if (dreader[0] != DBNull.Value)
                             {
-                                txt_Username.Text = dreader.GetString(0);
+                                username = dreader.GetString(0);
                             }
                             else
                             {
-                                txt_Username.Text = dreader.GetString(2);
+                                username = dreader.GetString(2);
                             }
-                            string password = dreader.GetString(1);
-                            txt_Password.Attributes.Add("value", password);
-                            // txt_Password.Text = password;
-                            SetUserSession(txt_Username.Text?.Trim(), password?.Trim());
+                            password = dreader.GetString(1);
                         }
+                        txt_Username.Text = username;
+                        txt_Password.Attributes.Add("value", password);
+                        // txt_Password.Text = password;
+                        SetUserSession(txt_Username.Text?.Trim(), password?.Trim());
                     }
                     conn.Close();
                 }                
@@ -169,6 +179,13 @@ namespace ACMESSPAttendance
             }
         }
 
+        bool resetAttendancePage()
+        {
+            Session.Clear();
+            Session.Abandon();
+            return true;
+        }
+
         void ClearSession()
         {
             Session.Remove(Utility.SessionUserNameKey);
@@ -198,7 +215,6 @@ namespace ACMESSPAttendance
         private void GetStudentAttendanceDetails()
         {
             try
-
             {
                 var userdetails = UserManagement.GetUser();
                 if (userdetails != null)
