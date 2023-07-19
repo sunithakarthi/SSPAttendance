@@ -214,9 +214,18 @@
         .divgrid{
             overflow-y: hidden;
         }
+
         .pnlrecord {
-            margin: 65px;
+            margin: 0 auto;
+            max-width: 800px;
+            height: auto;
+            bottom: 30px;
         }
+
+        .tablerowlast {
+            width: 186px !important;
+        }
+
     </style>
 
     <script type="text/javascript">
@@ -347,11 +356,11 @@
                     <h3>My Attendance</h3>
                 </div>
 
-                <div <%--class="table-responsive"--%>>
+                <div style="margin-bottom: 30px;">
                     <asp:Repeater ID="rpt_Records" runat="server" OnItemDataBound="rpt_Records_ItemDataBound">
                         <HeaderTemplate>
-                            <table id="records" class="scrolldown table-bordered ">
-                                <thead>
+                            <table id="records" class="scrolldown table-bordered " style="display: block;" >
+                                <thead style="display:revert">
                                     <tr>
                                         <th class=" border-right tableheader" >DATE</th>
                                         <th class=" border-right tableheader" >START TIME</th>
@@ -359,7 +368,7 @@
                                         <th class=" border-right tableheader" >TIME STUDIED</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody style="display:inline-block">
                         </HeaderTemplate>
                         <ItemTemplate>
                             <tr>
