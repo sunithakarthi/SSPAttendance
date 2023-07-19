@@ -214,7 +214,9 @@
         .divgrid{
             overflow-y: hidden;
         }
-
+        .pnlrecord {
+            margin: 65px;
+        }
     </style>
 
     <script type="text/javascript">
@@ -283,8 +285,9 @@
 </asp:Content>   
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
 
+    <div class="row" style="width:100%; height:100%;">
     <div class="row rowbodycontainer" >
-        <div class="col-sm-6">
+        <div class="col-sm-12">
 <div>
         <asp:Panel ID="pnl_Login" runat="server" DefaultButton="btn_Login" Class="loginpnl">
             <div>
@@ -333,15 +336,18 @@
         </asp:Panel>
     </div>
         </div>
-        <div class="col-sm-6 divgrid">
-        <div>
-            <asp:Panel ID="pnl_Records" runat="server">
+    </div>
+
+    <div class="row rowbodycontainer">
+        <div class="col-sm-12">
+
+            <asp:Panel ID="pnl_Records" class="pnlrecord" runat="server">
 
                 <div>
-                    <h3 class="myAttendanceTitle">My Attendance</h3>
+                    <h3>My Attendance</h3>
                 </div>
 
-                <div class="table-responsive">
+                <div <%--class="table-responsive"--%>>
                     <asp:Repeater ID="rpt_Records" runat="server" OnItemDataBound="rpt_Records_ItemDataBound">
                         <HeaderTemplate>
                             <table id="records" class="scrolldown table-bordered ">
@@ -366,7 +372,7 @@
                                 <td class="border-right tablerow">
                                     <asp:Literal runat="server" ID="lit_TimeOut" />
                                 </td>
-                                <td class="border-right tablerow">
+                                <td class="border-right tablerow tablerowlast">
                                     <asp:Literal runat="server" ID="lit_TimeStudied" />
                                 </td>
                             </tr>
@@ -383,8 +389,12 @@
                 </div>
             </asp:Panel>
         </div>
+        <div>
         </div>
     </div>
+    </div>
+
+
 
 
     
