@@ -108,7 +108,7 @@
             /*width: 100%;*/
             font-size: 14px;
             font-weight: bold;
-            font-family: Frutiger;
+            /*font-family: Frutiger;*/
         }
 
         table {
@@ -116,10 +116,10 @@
         }
 
             table tr td {
-                font-family: Frutiger;
+                /*font-family: Frutiger;*/
                 font-size: 13px;
                 font-weight: 300;
-                font-family: Frutiger;
+                /*font-family: Frutiger;*/
                 border: none !important;
                 padding: 10px !important;
                 word-wrap: break-word;
@@ -146,7 +146,7 @@
 
         .textcolor {
             color: #E86404;
-            font-family: Frutiger;
+            /*font-family: Frutiger;*/
             font-size: 16px;
             font-weight: bold;
         }
@@ -174,7 +174,7 @@
         }
 
         body {
-            font-family: "Frutiger" !important;
+            /*font-family: "Frutiger" !important;*/
         }
 
         .tableheader{

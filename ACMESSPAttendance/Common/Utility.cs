@@ -145,5 +145,36 @@ namespace ACMESSPAttendance
             dl.DataSource = alText;
             dl.DataBind();
         }
+
+        public static string GetFontFamilyName()
+        {
+            string fontfamilyname = "\"Frutiger\", Helvetica, Arial, sans-serif !important";
+
+            OperatingSystem os = Environment.OSVersion;
+            PlatformID pid = os.Platform;
+            switch (pid)
+            {
+                case PlatformID.Win32NT:
+                case PlatformID.Win32S:
+                case PlatformID.Win32Windows:
+                case PlatformID.WinCE:
+                    Console.WriteLine("I'm on windows!");
+                    fontfamilyname = "\"Frutiger\", Helvetica, Arial, sans-serif !important";
+                    break;
+                case PlatformID.Unix:
+                    Console.WriteLine("I'm a linux box!");
+                    fontfamilyname = "\"Frutiger\", Helvetica, Arial, sans-serif !important";
+                    break;
+                case PlatformID.MacOSX:
+                    Console.WriteLine("I'm a mac!");
+                    fontfamilyname = "Arial !important";
+                    break;
+                default:
+                    Console.WriteLine("No Idea what I'm on!");
+                    fontfamilyname = "\"Frutiger\", Helvetica, Arial, sans-serif !important";
+                    break;
+            }
+            return fontfamilyname;
+        }
     }
 }

@@ -30,7 +30,7 @@
     </style>
 
 </head>
-<body>
+<body Id="myattendanceloginbody" runat="server">
     <form runat="server">
         <asp:ScriptManager runat="server">
             <Scripts>
