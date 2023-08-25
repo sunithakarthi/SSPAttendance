@@ -1,232 +1,8 @@
 ﻿<%@ Page  Title="Attendance Login Page" Language="C#" MasterPageFile="~/LoginSite.Master" AutoEventWireup="true" CodeBehind="AttendanceLogin.aspx.cs" Inherits="ACMESSPAttendance.AttendanceLogin" %>
+
 <asp:Content ID="HeaderContent" ContentPlaceHolderID="HeaderContent" runat="server">
     <link href="Content/login.css" rel="stylesheet" />
-    <style type="text/css">
-        body {
-            color: #000 !important;
-        }
-
-        .form-control {
-            border: 3px solid #8bc34a !important;
-        }
-
-
-
-        .btn-primary {
-            color: #fff !important;
-            background-color: #8bc34a !important;
-            border-color: #8bc34a !important;
-            max-width: 102px !important;
-            max-height: 35px !important;
-            border: 1px !important;
-            border-radius: 4px !important;
-            font-size: 12px;
-        }
-        .labeltxt{
-            color:#8bc34a;
-        }
-
-        .btn-centre{
-            margin:0 auto;
-            display: block;
-        }
-
-        .margin20{
-            margin: 20px 0px;
-        }
-
-    </style>
-
-    <style type="text/css">
-        .bgcolor {
-            background-color: white;
-            margin-top: 65px;
-            height: 660px;
-            position: fixed;
-            width: 100%;
-        }
-
-        .bg-img {
-            position: fixed;
-        }
-
-/*        .list-program {
-            border-bottom: 3px solid #b6ff00 !important;
-        }*/
-
-        table.scrolldown {
-            width: 100%;
-            /* border-collapse: collapse; */
-            border-spacing: 0;
-            border: 2px solid black;
-        }
-
-            /* To display the block as level element */
-            table.scrolldown tbody, table.scrolldown thead {
-                display: inline-block;
-            }
-
-
-
-            table.scrolldown tbody {
-                /* Set the height of table body */
-                max-height: 375px;
-                min-height:50px;
-                /* Set vertical scroll */
-                overflow-y: visible;
-                /* Hide the horizontal scroll */
-                overflow-x: hidden;
-                /*display: block;*/
-            }
-
-            ::-webkit-scrollbar-track {
-                        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-                        background-color: #F5F5F5;
-                    }
-
- 
-
-                    ::-webkit-scrollbar {
-                        width: 15px;
-                        background-color: #F5F5F5;
-                    }
-
- 
-
-                    ::-webkit-scrollbar-thumb {
-                        background-color: #c1c1c1;
-                        border: 2px solid #c1c1c1;
-                        border-radius: 10px;
-                    }
-      /*  tbody td, thead th {
-            width: 170px;
-        }*/
-
-
-        thead {
-            background-color: #A9CD40;
-            /*width: 100%;*/
-            font-size: 14px;
-            font-weight: bold;
-            /*font-family: Frutiger;*/
-        }
-
-        table {
-            table-layout: fixed;
-        }
-
-            table tr td {
-                /*font-family: Frutiger;*/
-                font-size: 13px;
-                font-weight: 300;
-                /*font-family: Frutiger;*/
-                border: none !important;
-                padding: 10px !important;
-                word-wrap: break-word;
-                word-break: break-all;
-                border-spacing: 0;
-            }
-
-        .table-bordered > thead > tr > th {
-            border: none;
-            padding: 10px !important;
-            word-wrap: break-word;
-            word-break: break-all;
-            border-spacing: 0;
-        }
-
-        .table-bordered {
-            border: none !important;
-        }
-
-        .border-right {
-            border-right: 1px solid !important;
-            border-color: black;
-        }
-
-        .textcolor {
-            color: #E86404;
-            /*font-family: Frutiger;*/
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .maindiv {
-            margin-top: -45px;
-            margin-bottom: 25px;
-            margin-left: 25px;
-        }
-
-        .coursedate {
-            float: right;
-        }
-
-        .startdate {
-            margin-right: 100px
-        }
-
-        .enddate {
-            margin-right: 140px;
-        }
-
-        tbody tr:nth-child(odd) {
-            background-color: #ebf7cd;
-        }
-
-        body {
-            /*font-family: "Frutiger" !important;*/
-        }
-
-        .tableheader{
-            width: 200px !important;
-            word-break: break-word !important
-        }
-
-        .tablerow{
-            width: 200px !important;
-            word-break: break-word !important
-        }
-
-        .table-responsive {
-             min-height: 0.01%; 
-             overflow-x: auto; 
-             width: 816px !important;
-/*            max-height: 375px !important;
-            overflow-y: auto !important;
-            width: 800px !important;*/
-        }
-
-        .list-myattendance {
-            border-bottom: 3px solid #b6ff00 !important;
-        }
-
-        .myAttendanceTitle{
-            margin-top:24px;
-            margin-bottom:24px;
-        }
-
-        .rowbodycontainer{
-            width: 100%;
-            overflow-x: hidden;
-            overflow-y: hidden;
-        }
-
-        .divgrid{
-            overflow-y: hidden;
-        }
-
-        .pnlrecord {
-            margin: 0 auto;
-            max-width: 800px;
-            height: auto;
-            bottom: 30px;
-        }
-
-        .tablerowlast {
-            width: 186px !important;
-        }
-
-    </style>
+    
 
     <script type="text/javascript">
         function onClickCollapseInstructionChanges(s, e) {
@@ -293,9 +69,11 @@
 
 </asp:Content>   
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
-
-    <div class="row" style="width:100%; height:100%;">
-    <div class="row rowbodycontainer" >
+    <link href="Content/home.css" rel="stylesheet" />
+<div class="bg-img">
+    <div class="bgcolor">
+    <div class="rowbodycontainer" style="width:100%; height:100%;">
+    <div class="row " >
         <div class="col-sm-12">
 <div>
         <asp:Panel ID="pnl_Login" runat="server" DefaultButton="btn_Login" Class="loginpnl">
@@ -345,9 +123,10 @@
         </asp:Panel>
     </div>
         </div>
+        <div class="clearfix"></div>
     </div>
-
-    <div class="row rowbodycontainer">
+        <div class="row attendance-tablecontainer">
+    <div class="">
         <div class="col-sm-12">
 
             <asp:Panel ID="pnl_Records" class="pnlrecord" runat="server">
@@ -356,11 +135,11 @@
                     <h3>My Attendance</h3>
                 </div>
 
-                <div style="margin-bottom: 30px;">
+                <div class="attendance-table">
                     <asp:Repeater ID="rpt_Records" runat="server" OnItemDataBound="rpt_Records_ItemDataBound">
                         <HeaderTemplate>
-                            <table id="records" class="scrolldown table-bordered " style="display: block;" >
-                                <thead style="display:revert">
+                            <table id="records" class="scrolldown table-bordered">
+                                <thead>
                                     <tr>
                                         <th class=" border-right tableheader" >DATE</th>
                                         <th class=" border-right tableheader" >START TIME</th>
@@ -368,7 +147,7 @@
                                         <th class=" border-right tableheader" >TIME STUDIED</th>
                                     </tr>
                                 </thead>
-                                <tbody style="display:inline-block">
+                                <tbody >
                         </HeaderTemplate>
                         <ItemTemplate>
                             <tr>
@@ -389,7 +168,7 @@
                         <FooterTemplate>
                             </tbody>
                  </table>
-                            <div id="dvNoRecords" runat="server" visible="false" style="width: 800px; text-align: center; padding-top: 50px;">
+                            <div id="dvNoRecords" runat="server" visible="false" style="text-align: center; padding-top: 50px;">
                                 <b>No records Found.
                                 </b>
                             </div>
@@ -398,11 +177,14 @@
                 </div>
             </asp:Panel>
         </div>
+        <div class="clearfix"></div>
         <div>
         </div>
     </div>
+            </div>
     </div>
-
+        </div>
+    </div>
 
 
 

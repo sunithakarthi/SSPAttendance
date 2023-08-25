@@ -72,11 +72,11 @@ class-img {
     /*background: rgba(255,255,255,0.5);*/
     background: #1e1d1db5;
     display: table;
-    margin: 0 auto;
+    margin: 30px auto;
     padding: 20px 20px;
     width: 100%;
     max-width: 400px;
-    top: 30px;
+     
     height: auto;
     position: relative;
     border-radius: 2px !important;
@@ -91,12 +91,12 @@ a {
     color: #0b0b0b !important;
     text-decoration: none;
 }
-
-@media only screen and (max-width: 992px){
+.rowbodycontainer{display:none}
+@media only screen and (max-width: 992px) {
     .sspimg {
         max-width: 360px;
         width: 100%;
         
     }
-    .header-section{padding:40px 30px;}
+    .header-section{padding:10px 30px;}
 }
