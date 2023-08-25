@@ -1,4 +1,5 @@
-﻿using ACMESSPAttendance.Model;
+﻿using ACMESSPAttendance.Common;
+using ACMESSPAttendance.Model;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -98,6 +99,7 @@ namespace ACMESSPAttendance
                     if(!reader.IsDBNull(8)) { user.Email = reader.GetString(8);}
                     if (!reader.IsDBNull(9)) { user.CVSUserID = reader.GetInt32(9); }
                     if (!reader.IsDBNull(10)) { user.CVSAuthProviderID = reader.GetInt32(10); }
+                    if (!reader.IsDBNull(11)) { user.LockID = reader.GetInt32(11); }
 
                 }
                 reader.Close();
@@ -131,25 +133,27 @@ namespace ACMESSPAttendance
                 cmd.Parameters.Add("@email", SqlDbType.NVarChar);
                 cmd.Parameters.Add("@password", SqlDbType.NVarChar);
                 cmd.Parameters.Add("@ip_address", SqlDbType.NVarChar);
+                cmd.Parameters.Add("@app_name", SqlDbType.NVarChar);
                 cmd.Parameters.Add("@user_id", SqlDbType.Int);
                 cmd.Parameters.Add("@status", SqlDbType.Int);
                 cmd.Parameters[0].Value = email;
                 cmd.Parameters[1].Value = password;
                 cmd.Parameters[2].Value = ipAddress;
-                cmd.Parameters[3].Direction = ParameterDirection.Output;                                                                                                                   
-                cmd.Parameters[4].Direction = ParameterDirection.Output;
+                cmd.Parameters[3].Value = ipAddress;
+                cmd.Parameters[4].Direction = ParameterDirection.Output;                                                                                                                   
+                cmd.Parameters[5].Direction = ParameterDirection.Output;
 
                 cmd.ExecuteNonQuery();
 
-                if (Convert.ToInt32(cmd.Parameters[4].Value) < 1)
+                if (Convert.ToInt32(cmd.Parameters[5].Value) < 1)
                 {
                     throw new Exception(GetSessionError(Convert.ToInt32(cmd.Parameters[4].Value)));
                 }
 
                 // Create Current User Information
                 UserViewModel user = new UserViewModel();
-                user.UserId = Convert.ToInt32(cmd.Parameters[3].Value);
-                user.SessionId = Convert.ToInt32(cmd.Parameters[4].Value);
+                user.UserId = Convert.ToInt32(cmd.Parameters[4].Value);
+                user.SessionId = Convert.ToInt32(cmd.Parameters[5].Value);
                 user.IPAddress = ipAddress;
                 user.LoginDateTime = DateTime.Now;
 
@@ -278,5 +282,35 @@ namespace ACMESSPAttendance
             return true;
         }
 
+        public static bool UserHaveCanvasAuthProvider()
+        {
+            var user = UserManagement.GetUser();
+
+            if (user != null && user.CVSAuthProviderID == (int)CanvasAuthProvider.StudentSuccessPortal)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool IsUserLocked()
+        {
+            var user = UserManagement.GetUser();
+
+            if (user != null && user.LockID == 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
     }
+
+
 }

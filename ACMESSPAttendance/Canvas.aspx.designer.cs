@@ -13,5 +13,14 @@ namespace ACMESSPAttendance
 
     public partial class Canvas
     {
+
+        /// <summary>
+        /// lit_canvas_result control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal lit_canvas_result;
     }
 }

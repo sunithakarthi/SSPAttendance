@@ -18,14 +18,21 @@ namespace ACMESSPAttendance
         {
             if (!IsPostBack)
             {
-                bool isUserAuthenticated = UserHaveCanvasAuthProvider();
-                if (isUserAuthenticated)
+                if (!UserManagement.IsUserLocked())
                 {
-                    RedirectToCanvasSiteWithPostData();
+                    bool isUserAuthenticated = UserManagement.UserHaveCanvasAuthProvider();
+                    if (isUserAuthenticated)
+                    {
+                        RedirectToCanvasSiteWithPostData();
+                    }
+                    else
+                    {
+                        Response.Redirect("https://mynew.aolcc.ca/login/canvas", true);
+                    }
                 }
                 else
                 {
-                    Response.Redirect("https://mynew.aolcc.ca/login/canvas", true);
+                    lit_canvas_result.Text = "You do not have permission to login to myAOLCC.";
                 }
             }
         }

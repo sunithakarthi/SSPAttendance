@@ -26,5 +26,6 @@ namespace ACMESSPAttendance.Model
         public string Location { get; set; }
         public int CVSUserID { get; set; }
         public int CVSAuthProviderID { get; set; }
+        public int LockID { get; set; }
     }
 }
