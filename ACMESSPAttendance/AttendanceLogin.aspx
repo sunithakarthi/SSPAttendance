@@ -55,8 +55,7 @@
 
             var currentDate = new Date();
             var startTime = currentDate.getTime();
-            var twohoursCountdown = new Date();
-            twohoursCountdown.setMinutes(twohoursCountdown.getMinutes() + 10);
+            var twohoursCountdown = new Date(currentDate.getTime() + (2 * 60 * 60000));
             console.log(twohoursCountdown);
 
             var twohoursandfiveminutesCountdown = new Date(twohoursCountdown.getTime() + (5 * 60000));
