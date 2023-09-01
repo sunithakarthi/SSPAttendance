@@ -43,8 +43,8 @@ namespace ACMESSPAttendance
                         FillLogin(userid);
                     }
                 }
-                GetStudentAttendanceDetails();
             }
+            GetStudentAttendanceDetails();
         }
 
         private void FillLogin(int id)
@@ -99,6 +99,7 @@ namespace ACMESSPAttendance
                     if (AttendanceFunction.GetSignInStatus(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID])))
                     {
                         ASPxlblInfo.Text = "You did not sign out yet. Please sign out first.";
+                        btn_Logout.Enabled = true;
                         btn_myALOCC.Visible = true;
                         SetUserSession(username, password);
                         GetStudentAttendanceDetails();
@@ -152,12 +153,19 @@ namespace ACMESSPAttendance
         {
             if (Session[AttendanceFunction.SESS_USERID] != null && Session[AttendanceFunction.SESS_TIMEIN] != null)
             {
+                DateTime _signoutDatetime = DateTime.Now;
+                DateTime? signoutDatetime = null;
+                if (DateTime.TryParse(hdnloggedhours.Value, out _signoutDatetime))
+                {
+                    signoutDatetime = Convert.ToDateTime(_signoutDatetime);
+                }
+
                 bool isSuccessSignOut = false;
                 //if (ddl_course.Items.Count > 0 && !string.IsNullOrEmpty(ddl_course.SelectedItem.Value))
                 //{
                 ASPxlblwarningInfo.Text = "";
                 //isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
-                isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), 0);
+                isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), 0, signoutDatetime);
                 if (isSuccessSignOut)
                 {
                     ASPxlblInfo.Text = string.Format("You have successfully signed out at {0}.", Session[AttendanceFunction.SESS_TIMEIN].ToString());

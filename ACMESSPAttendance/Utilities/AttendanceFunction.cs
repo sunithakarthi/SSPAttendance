@@ -344,7 +344,7 @@ namespace ACMESSPAttendance.Utilities
         /// <summary>
         /// Used to record a student sign out.  
         /// 
-        public static bool RecordSignoutAttendance(int UserID, DateTime dtTimein, int ccid=0)
+        public static bool RecordSignoutAttendance(int UserID, DateTime dtTimein, int ccid=0, DateTime? dtTimeout = null)
         {
             int attendanceid = -1;
             bool success = false;
@@ -365,7 +365,7 @@ namespace ACMESSPAttendance.Utilities
                     cmd.Parameters["@timein"].Value = Convert.ToDateTime(dtTimein);
                     object obj = cmd.ExecuteScalar();
 
-                    DateTime timeout = GetCurrentTimebyUserTimeZone(UserID);
+                    DateTime timeout = GetCurrentTimebyUserTimeZone(UserID, dtTimeout);
                     if (obj != null)    // update record in Attendance
                     {
                         attendanceid = (int)obj;
@@ -436,10 +436,14 @@ namespace ACMESSPAttendance.Utilities
             return success;
         }
 
-        public static DateTime GetCurrentTimebyUserTimeZone(int UserID)
+        public static DateTime GetCurrentTimebyUserTimeZone(int UserID, DateTime? signoutDate = null)
         {
             //The default time is EST, which get from server time.
             DateTime curTime = DateTime.Now;
+            //if (signoutDate != null)
+            //{
+            //    curTime = Convert.ToDateTime(signoutDate);
+            //}
             string province = GetUserProvinceByUserID(UserID);
             switch (province.ToUpper())
             {

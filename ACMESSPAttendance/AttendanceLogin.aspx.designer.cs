@@ -123,6 +123,15 @@ namespace ACMESSPAttendance
         protected global::System.Web.UI.WebControls.HiddenField hdshowtimer;
 
         /// <summary>
+        /// hdnloggedhours control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdnloggedhours;
+
+        /// <summary>
         /// btn_Login control.
         /// </summary>
         /// <remarks>
@@ -166,5 +175,14 @@ namespace ACMESSPAttendance
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Repeater rpt_Records;
+
+        /// <summary>
+        /// btnSubmit control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnSubmit;
     }
 }

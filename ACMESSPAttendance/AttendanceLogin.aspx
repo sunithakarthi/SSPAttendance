@@ -1,10 +1,34 @@
 ﻿<%@ Page  Title="Attendance Login Page" Language="C#" MasterPageFile="~/LoginSite.Master" AutoEventWireup="true" CodeBehind="AttendanceLogin.aspx.cs" Inherits="ACMESSPAttendance.AttendanceLogin" %>
 
 <asp:Content ID="HeaderContent" ContentPlaceHolderID="HeaderContent" runat="server">
+
     <link href="Content/login.css" rel="stylesheet" />
     
-
     <script type="text/javascript">
+
+        var modalpopupshown = false;
+        var intervalId;
+
+        $(document).ready(function () {
+            $('#attendancedialog').on('click', function () {
+                $('#attendancepopup').modal('show');
+            });
+        });
+
+        $('#btnYes').on('click', function () {
+            $('#attendancepopup').modal('hide');
+        });
+
+        $(function () {
+            $("input[type='submit']").click(function () {
+                if ($(this).hasClass('changeTarget')) {
+                    window.document.forms[0].target = '_blank';
+                } else {
+                    window.document.forms[0].target = '_self';
+                }
+            });
+        });
+
         function onClickCollapseInstructionChanges(s, e) {
             var curFImageUrl = s.GetImageUrl();
             if (curFImageUrl.indexOf('Images/Expand.png') > 0) {
@@ -16,58 +40,107 @@
                 $("#divFolder").slideUp("slow");
             }
         }
-    </script>    
 
-    <script>
         function setButtonClicked() {
             document.getElementById('<%= HiddenField1.ClientID %>').value = 'true';
         }
-    </script>
 
-    <script type="text/javascript">
-        var intervalId;
-        function stopTimer() {       
-            var value = $("#MainContent_timer").text();    
+        function stopTimer() {
+            var value = $("#MainContent_timer").text();
             document.getElementById("<%=hdshowtimer.ClientID %>").value = value;
             clearInterval(intervalId);
         }
-        function countdown() {            
-            var startTime = new Date().getTime(); 
+
+        function countdown() {
+
+            var currentDate = new Date();
+            var startTime = currentDate.getTime();
+            var twohoursCountdown = new Date();
+            twohoursCountdown.setMinutes(twohoursCountdown.getMinutes() + 10);
+            console.log(twohoursCountdown);
+
+            var twohoursandfiveminutesCountdown = new Date(twohoursCountdown.getTime() + (5 * 60000));
+            console.log(twohoursandfiveminutesCountdown);
 
             intervalId = setInterval(function () {
-                var currentTime = new Date().getTime(); 
-                var elapsedTime = currentTime - startTime; 
-                
+
+                var newcurrentdate = new Date();
+
+                var currentTime = newcurrentdate.getTime();
+
+                var elapsedTime = currentTime - startTime;
+
+                // Find the distance between now and the count down date
+                var distance = twohoursCountdown - currentTime;
+
+                var fiveminutesdistance = twohoursandfiveminutesCountdown - currentTime;
+
                 var hours = Math.floor(elapsedTime / (1000 * 60 * 60));
-            var minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
-            var seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
-            var formattedTime = hours.toString().padStart(2, "0") + ":" +
-                minutes.toString().padStart(2, "0") + ":" +
-                seconds.toString().padStart(2, "0");       
-                document.getElementById('<%= timer.ClientID %>').innerHTML = formattedTime;                
-        }, 1000); 
+                var minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+                var formattedTime = hours.toString().padStart(2, "0") + ":" +
+                    minutes.toString().padStart(2, "0") + ":" +
+                    seconds.toString().padStart(2, "0");
+                document.getElementById('<%= timer.ClientID %>').innerHTML = formattedTime; 
+
+                var formattednewcurrentdatetime = ("0" + newcurrentdate.getDate()).slice(-2) + "-" + ("0" + (newcurrentdate.getMonth() + 1)).slice(-2) + "-" +
+                    newcurrentdate.getFullYear() + " " + ("0" + newcurrentdate.getHours()).slice(-2) + ":" + ("0" + newcurrentdate.getMinutes()).slice(-2) + ":" + ("0" + newcurrentdate.getSeconds()).slice(-2);
+
+                // If the count down is over, write some text 
+                if (distance < 0 && modalpopupshown == false) {
+                    console.log("distance : " + distance);
+                    console.log("distance - formattednewcurrentdatetime : " + formattednewcurrentdatetime);
+                    document.getElementById("<%=hdnloggedhours.ClientID %>").value = formattednewcurrentdatetime;
+                    showModal();
+                }
+                else if (fiveminutesdistance < 0 && modalpopupshown == true) {
+                    console.log("fiveminutesdistance : " + fiveminutesdistance);
+                    console.log("fiveminutesdistance - formattednewcurrentdatetime : " + formattednewcurrentdatetime);
+                    clearInterval(intervalId);
+                    document.getElementById("<%=hdnloggedhours.ClientID %>").value = formattednewcurrentdatetime;
+                    hideModal();
+                    document.getElementById('<%= btnSubmit.ClientID %>').click();
+                }
+            }, 1000);
         }
 
+        function btnNoClick() {
+            clearInterval(intervalId);
+            hideModal();
+            document.getElementById('<%= btnSubmit.ClientID %>').click();
+        }
 
+        function btnYesClick() {
+            clearInterval(intervalId);
+            hideModal();
+            countdown();
+        }
 
+        function targetMeBlank() {
+            document.forms[0].target = "_blank";
+            $('#attendancepopup').modal('hide');
+        }
 
-    </script>
+        function init() {
+            var element = $('#attendancepopup').detach();
+            $($("form")[0]).append(element);
+        }
+        window.addEventListener('DOMContentLoaded', init, false);
 
-    <script type="text/javascript">
+        function showModal() {
+            $('#attendancepopup').modal('show');
+            modalpopupshown = true;
+        }
 
-        $(function () {
-            $("input[type='submit']").click(function () {
-                if ($(this).hasClass('changeTarget')) {
-                    window.document.forms[0].target = '_blank';
-                } else {
-                    window.document.forms[0].target = '_self';
-                }
-            });
-        });
-    </script>
+        function hideModal() {
+            $('#attendancepopup').modal('hide');
+            modalpopupshown = false;
+        }
 
+    </script>    
 
 </asp:Content>   
+
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <link href="Content/home.css" rel="stylesheet" />
 <div class="bg-img">
@@ -86,14 +159,14 @@
                 </asp:Panel>
                 <div class="form-group mb-3">
                     <label for="emailaddress" class="labeltxt">Email / UserName</label>
-                    <asp:TextBox ID="txt_Username" runat="server" CssClass="form-control" />
+                    <asp:TextBox ID="txt_Username" runat="server" CssClass="form-control" AutoPostBack="false" />
                     <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server"
                         ControlToValidate="txt_Username" ErrorMessage="Please enter your email / username"
                         ForeColor="Red"></asp:RequiredFieldValidator>
                 </div>
                 <div class="form-group mb-3">
                     <label for="password" class="labeltxt">Password</label>
-                    <asp:TextBox ID="txt_Password" runat="server"  Password="true" TextMode="Password" CssClass="form-control" AutoPostBack="true" ClientIDMode="Static" />
+                    <asp:TextBox ID="txt_Password" runat="server"  Password="true" TextMode="Password" CssClass="form-control" AutoPostBack="false" />
                     <asp:HiddenField ID="HiddenField1" runat="server" Value="false" />
                     <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server"
                         ControlToValidate="txt_Password" ErrorMessage="Please enter your password"
@@ -106,13 +179,14 @@
                 </asp:Label>
                                
                 <br />
-                <div id="timer" runat="server" class="head-title" ></div>        
-                <asp:HiddenField ID="hdshowtimer" runat="server" />               
+                <div id="timer" runat="server" class="head-title" ></div>  
+                <asp:HiddenField ID="hdshowtimer" runat="server" />    
+                <asp:HiddenField ID="hdnloggedhours" runat="server" />
                 <div class="form-group text-center mb-3">
                   
-                    <asp:Button ID="btn_Login" runat="server"  AutoPostBack="true" ClientIDMode="Static" onclick="ASPxbtnSignin_Click" OnClientClick="setButtonClicked();" CssClass="btn btn-primary btn-lg width-lg btn-rounded" Text="Sign In" Width="100%" ></asp:button>
+                    <asp:Button ID="btn_Login" runat="server" CausesValidation="False" onclick="ASPxbtnSignin_Click" CssClass="btn btn-primary btn-lg width-lg btn-rounded" Text="Sign In" Width="100%" ></asp:button>
 
-                    <asp:Button ID="btn_Logout" runat="server"  AutoPostBack="true" ClientIDMode="Static" onclick="ASPxbtnSignOut_Click" OnClientClick="stopTimer();"  CssClass="btn btn-primary btn-lg width-lg btn-rounded" Text="Sign Out" Width="100%" ></asp:button>
+                    <asp:Button ID="btn_Logout" runat="server" CausesValidation="False" onclick="ASPxbtnSignOut_Click" OnClientClick="stopTimer();" CssClass="btn btn-primary btn-lg width-lg btn-rounded" Text="Sign Out" Width="100%" ></asp:button>
                 </div>
 
                 <div class="margin20">
@@ -186,7 +260,34 @@
         </div>
     </div>
 
-
+            <div id="attendancepopup" class="modal fade" data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:200px;">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header" style="padding-bottom: 0px; padding-top: 8px; border-bottom:none;">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>                                                      
+                        </div>
+                        <div class="modal-body">
+                            <form id="popupForm" method="post">
+                                <table id="Table3" class="attendancedialog" cellspacing="0" cellpadding="0" width="100%">
+                                    <tr style="background-color: white !important;">
+                                        <td style="font-size:15px; word-break:unset !important;">
+                                           Are you still on myAOLCC?
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="btnYes" CssClass="btn btn-info waves-effect waves-light btn-primary" onclick="btnYesClick(); return false;" >Yes</button>
+                            <button id="btnNo" CssClass="btn btn-info waves-effect waves-light btn-primary" onclick="btnNoClick(); return false;" >No</button>
+                            <asp:Button ID="btnSubmit" runat="server" CssClass="btn btn-info waves-effect waves-light btn-primary" Text="No" onclick="ASPxbtnSignOut_Click" style="display:none"   />
+                        </div>
+                    </div>
+                    <!-- Modal content-->
+                </div>
+            </div>
 
     
 
