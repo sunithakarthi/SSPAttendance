@@ -116,13 +116,13 @@ namespace ACMESSPAttendance
                                 btn_Login.Enabled = false;
                                 btn_Logout.Enabled = true;
                                 btn_myALOCC.Visible = true;
-                                Page.ClientScript.RegisterStartupScript(this.GetType(), "countdown", "countdown();", true);
-
+                                DateTime serverDateTime = GetCurrentTimebyUserTimeZone();
+                                Page.ClientScript.RegisterStartupScript(this.GetType(), "countdown", "countdown('" + serverDateTime + "');", true);
                                 SetUserSession(username, password);
-                            GetStudentAttendanceDetails();
+                                GetStudentAttendanceDetails();
 
-                            //ddl_course.Enabled = false;
-                        }
+                                //ddl_course.Enabled = false;
+                            }
                             else
                             {
                                 ASPxlblInfo.Text = "You sign in failed.";
@@ -165,7 +165,7 @@ namespace ACMESSPAttendance
                 //{
                 ASPxlblwarningInfo.Text = "";
                 //isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
-                isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), 0, signoutDatetime);
+                isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), 0);
                 if (isSuccessSignOut)
                 {
                     ASPxlblInfo.Text = string.Format("You have successfully signed out at {0}.", Session[AttendanceFunction.SESS_TIMEIN].ToString());
@@ -224,7 +224,7 @@ namespace ACMESSPAttendance
         {
             try
             {
-                var userdetails = UserManagement.GetUser();
+                var userdetails = UserManagement.GetUser();                                                      
                 if (userdetails != null)
                 {
                     SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["acme_aol_test_CS"].ConnectionString);
@@ -316,6 +316,11 @@ namespace ACMESSPAttendance
                     }
                 }
             }
+        }
+
+        private DateTime GetCurrentTimebyUserTimeZone()
+        {
+            return AttendanceFunction.GetCurrentTimebyUserTimeZone(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]));
         }
 
     }

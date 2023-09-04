@@ -51,8 +51,9 @@
             clearInterval(intervalId);
         }
 
-        function countdown() {
+        function countdown(serverdatetime) {
 
+            console.log('serverdatetime : ', serverdatetime);
             var currentDate = new Date();
             var startTime = currentDate.getTime();
             var twohoursCountdown = new Date(currentDate.getTime() + (2 * 60 * 60000));
