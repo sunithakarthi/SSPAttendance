@@ -172,6 +172,7 @@
     <Content Include="Content\home.css" />
     <Content Include="Content\login.css" />
     <Content Include="Content\Site.css" />
+    <Content Include="Default.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -317,6 +318,13 @@
     <Compile Include="Common\LogWriter.cs" />
     <Compile Include="Common\UserManagement.cs" />
     <Compile Include="Common\Utility.cs" />
+    <Compile Include="Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
