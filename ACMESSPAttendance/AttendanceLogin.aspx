@@ -58,10 +58,11 @@
             console.log('serverdatetime : ', serverdatetime);
             var currentDate = new Date();
             var startTime = currentDate.getTime();
-            var twohoursCountdown = new Date(currentDate.getTime() + (2 * 60 * 60000));
+            //var twohoursCountdown = new Date(currentDate.getTime() + (2 * 60 * 60000));
+            var twohoursCountdown = new Date(currentDate.getTime() + (5 * 60000));
             console.log(twohoursCountdown);
 
-            var twohoursandfiveminutesCountdown = new Date(twohoursCountdown.getTime() + (5 * 60000));
+            var twohoursandfiveminutesCountdown = new Date(twohoursCountdown.getTime() + (2 * 60000));
             console.log(twohoursandfiveminutesCountdown);
 
             var st = srvTime();
