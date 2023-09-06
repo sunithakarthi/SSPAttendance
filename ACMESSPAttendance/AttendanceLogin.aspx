@@ -3,6 +3,8 @@
 <asp:Content ID="HeaderContent" ContentPlaceHolderID="HeaderContent" runat="server">
 
     <link href="Content/login.css" rel="stylesheet" />
+
+    <script src="Scripts/Common/serverDate.js"></script>
     
     <script type="text/javascript">
 
@@ -61,6 +63,10 @@
 
             var twohoursandfiveminutesCountdown = new Date(twohoursCountdown.getTime() + (5 * 60000));
             console.log(twohoursandfiveminutesCountdown);
+
+            var st = srvTime();
+            var serverdatetime = new Date(st);
+            console.log('javascript serverdatetime : ', serverdatetime);
 
             intervalId = setInterval(function () {
 
@@ -195,6 +201,7 @@
         
             </div>
         </asp:Panel>
+
     </div>
         </div>
         <div class="clearfix"></div>

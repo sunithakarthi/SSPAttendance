@@ -231,6 +231,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
+    <Content Include="Scripts\Common\serverDate.js" />
     <Content Include="Scripts\devextreme-localization\dx.messages.de.js" />
     <Content Include="Scripts\devextreme-localization\dx.messages.en.js" />
     <Content Include="Scripts\devextreme-localization\dx.messages.ja.js" />
