@@ -27,7 +27,7 @@ namespace ACMESSPAttendance
             ASPxlblwarningInfo.Text = "";
             string password = txt_Password.Text.Trim();
             txt_Password.Attributes.Add("value", password);
-            timer.InnerText = Request.Form[hdshowtimer.UniqueID];
+            // timer.InnerText = Request.Form[hdshowtimer.UniqueID];
             if (!IsPostBack)
             {
                 var resetStatus = Request.QueryString["resetattendancepage"];
@@ -116,8 +116,7 @@ namespace ACMESSPAttendance
                                 btn_Login.Enabled = false;
                                 btn_Logout.Enabled = true;
                                 btn_myALOCC.Visible = true;
-                                DateTime serverDateTime = GetCurrentTimebyUserTimeZone();
-                                Page.ClientScript.RegisterStartupScript(this.GetType(), "countdown", "countdown('" + serverDateTime + "');", true);
+                                Page.ClientScript.RegisterStartupScript(this.GetType(), "countdown", "countdown();", true);
                                 SetUserSession(username, password);
                                 GetStudentAttendanceDetails();
 
