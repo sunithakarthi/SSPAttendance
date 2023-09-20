@@ -119,7 +119,7 @@
 
             let startTime = new Date().getTime();
 
-            modelpopupopenatnext2hours();
+            // modelpopupopenatnext2hours();
 
             intervalId = setInterval(function () {
 
