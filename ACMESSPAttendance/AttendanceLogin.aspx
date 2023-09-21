@@ -264,6 +264,14 @@
                                             ControlToValidate="txt_Password" ErrorMessage="Please enter your password"
                                             ForeColor="Red"></asp:RequiredFieldValidator>
                                     </div>
+                                    <div class="form-group mb-3">
+                                        <label class="labeltxt">Select Course </label>
+                                         <%--<asp:Button ID="ASPxbtnCourse" OnClick="ASPxbtnCourse_Click" runat="server"  CssClass="btn btn-primary btn-lg width-lg btn-rounded" style="text-align:center;padding:10px" Text="Select Course" Width="100%" ></asp:button>--%>
+                                         <asp:DropDownList ID="ddl_course" runat="server" ValueType="System.String"  Font-Size="9pt" Font-Names="Frutiger" style="padding:5px;width:178px;height: 35px; border: 3px solid #8bc34a !important;">
+                                            <Items>                            
+                                            </Items>
+                                        </asp:DropDownList>
+                                    </div>
                                     &nbsp;<asp:Label ID="ASPxlblwarningInfo" runat="server" Text="" Font-Size="10pt" ForeColor="red">
                                     </asp:Label>
 

@@ -43,6 +43,16 @@ namespace ACMESSPAttendance
                         FillLogin(userid);
                     }
                 }
+                string _username = txt_Username.Text.Trim();
+                string _password = txt_Password.Text.Trim();
+                bool isSchHolidayBlocked = false;
+                if(AttendanceFunction.ValidateUser(_username, _password, ref isSchHolidayBlocked))
+                {
+                    if (!isSchHolidayBlocked)
+                    {
+                        PopulateCourse();
+                    }
+                }
             }
             GetStudentAttendanceDetails();
         }
@@ -74,7 +84,7 @@ namespace ACMESSPAttendance
                         }
                         txt_Username.Text = username;
                         txt_Password.Attributes.Add("value", password);
-                        // txt_Password.Text = password;
+                        txt_Password.Text = password;
                         SetUserSession(txt_Username.Text?.Trim(), password?.Trim());
                     }
                     conn.Close();
@@ -107,8 +117,8 @@ namespace ACMESSPAttendance
                     else
                     {
 
-                        //if (ddl_course.Items.Count > 0 && !string.IsNullOrEmpty(ddl_course.SelectedItem.Value))
-                        //{
+                        if (ddl_course.Items.Count > 0 && !string.IsNullOrEmpty(ddl_course.SelectedItem.Value))
+                        {
                             isSuccessSignIn = AttendanceFunction.RecordSigninAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]));
                             if (isSuccessSignIn)
                             {
@@ -119,13 +129,19 @@ namespace ACMESSPAttendance
                                 Page.ClientScript.RegisterStartupScript(this.GetType(), "countdown", "countdown();", true);
                                 SetUserSession(username, password);
                                 GetStudentAttendanceDetails();
-
-                                //ddl_course.Enabled = false;
+                                ddl_course.Enabled = false;
                             }
                             else
                             {
                                 ASPxlblInfo.Text = "You sign in failed.";
                             }
+                        }
+                        else
+                        {
+                            ASPxlblInfo.Text = "";
+                            ASPxlblwarningInfo.Text = "Please select course from the dropdownlist";
+                            PopulateCourse();
+                        }
                     }
                 }
                 else
@@ -160,23 +176,32 @@ namespace ACMESSPAttendance
                 }
 
                 bool isSuccessSignOut = false;
-                //if (ddl_course.Items.Count > 0 && !string.IsNullOrEmpty(ddl_course.SelectedItem.Value))
-                //{
-                ASPxlblwarningInfo.Text = "";
-                //isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
-                isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), 0);
-                if (isSuccessSignOut)
+                if (ddl_course.Items.Count > 0 && !string.IsNullOrEmpty(ddl_course.SelectedItem.Value))
                 {
-                    ASPxlblInfo.Text = string.Format("You have successfully signed out at {0}.", Session[AttendanceFunction.SESS_TIMEIN].ToString());
-                    btn_Logout.Enabled = false;
-                    btn_Login.Enabled = true;
-                    btn_myALOCC.Visible = false;
-                    //ddl_course.Enabled = true;
-                    GetStudentAttendanceDetails();
-                    ClearSession();
+                    ASPxlblwarningInfo.Text = "";
+                    isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
+                    //isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), 0);
+                    if (isSuccessSignOut)
+                    {
+                        ASPxlblInfo.Text = string.Format("You have successfully signed out at {0}.", Session[AttendanceFunction.SESS_TIMEIN].ToString());
+                        btn_Logout.Enabled = false;
+                        btn_Login.Enabled = true;
+                        btn_myALOCC.Visible = false;
+                        ddl_course.Enabled = true;
+                        GetStudentAttendanceDetails();
+                        ClearSession();
+                    }
+                    else
+                    {
+                        ASPxlblInfo.Text = "You sign out failed.";
+                    }
                 }
                 else
-                    ASPxlblInfo.Text = "You sign out failed.";
+                {
+                    ASPxlblInfo.Text = "";
+                    ASPxlblwarningInfo.Text = "Please select course from the dropdownlist";
+                }
+
             }
             else
             {
@@ -320,6 +345,35 @@ namespace ACMESSPAttendance
         private DateTime GetCurrentTimebyUserTimeZone()
         {
             return AttendanceFunction.GetCurrentTimebyUserTimeZone(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]));
+        }
+
+        private bool PopulateCourse()
+        {
+            bool hasCourse = false;
+            if (Session[AttendanceFunction.SESS_USERID] != null)
+            {
+                DataTable dtStudCourse = AttendanceFunction.GetStudentCourse(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]));
+
+                ddl_course.Items.Clear();
+                if (dtStudCourse != null && dtStudCourse.Rows.Count > 0)
+                {
+                    foreach (DataRow rowSC in dtStudCourse.Rows)
+                    {
+                        ddl_course.Items.Add(new ListItem(rowSC["CourseName"].ToString(), Convert.ToInt32(rowSC["ccid"]).ToString()));
+
+
+                    }
+                    hasCourse = true;
+                }
+                else
+                {
+                    hasCourse = false;
+                }
+                ddl_course.Items.Insert(0, new ListItem("--Please Select--", ""));
+                //ddl_course.Items.Clear();
+
+            }
+            return hasCourse;
         }
 
     }
