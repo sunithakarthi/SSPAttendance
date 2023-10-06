@@ -100,6 +100,7 @@ namespace ACMESSPAttendance
                     if (!reader.IsDBNull(9)) { user.CVSUserID = reader.GetInt32(9); }
                     if (!reader.IsDBNull(10)) { user.CVSAuthProviderID = reader.GetInt32(10); }
                     if (!reader.IsDBNull(11)) { user.LockID = reader.GetInt32(11); }
+                    if (!reader.IsDBNull(12)) { user.AccountLockStatusID = reader.GetInt32(12); }
 
                 }
                 reader.Close();
@@ -139,7 +140,7 @@ namespace ACMESSPAttendance
                 cmd.Parameters[0].Value = email;
                 cmd.Parameters[1].Value = password;
                 cmd.Parameters[2].Value = ipAddress;
-                cmd.Parameters[3].Value = ipAddress;
+                cmd.Parameters[3].Value = "SSPAttendance";
                 cmd.Parameters[4].Direction = ParameterDirection.Output;                                                                                                                   
                 cmd.Parameters[5].Direction = ParameterDirection.Output;
 
@@ -300,7 +301,7 @@ namespace ACMESSPAttendance
         {
             var user = UserManagement.GetUser();
 
-            if (user != null && user.LockID == 1)
+            if (user != null && user.AccountLockStatusID == 3)
             {
                 return true;
             }
