@@ -151,15 +151,18 @@ namespace ACMESSPAttendance
             }
             else if (username.Length <= 3)
             {
-                ASPxlblInfo.Text = "Please enter Username";
+                ASPxlblInfo.Text = "";
+                ASPxlblwarningInfo.Text = "Please enter Username";
             }
             else if (password.Length <= 4)
             {
-                ASPxlblInfo.Text = "Please enter Password";
+                ASPxlblInfo.Text = "";
+                ASPxlblwarningInfo.Text = "Please enter Password";
             }
             else
             {
-                ASPxlblInfo.Text = "Your Username or Password is invalid.";
+                ASPxlblInfo.Text = "";
+                ASPxlblwarningInfo.Text = "Your Username or Password is invalid.";
             }
         }
 

@@ -166,7 +166,7 @@ namespace ACMESSPAttendance.Utilities
 
                 string sqlText = @"Select UserID, RoleID, SchoolID from [ACME_MAIN_TEST].[dbo].[User] 
                                 Where Username = @Username and [Password] = @Password
-	                              and RoleID = 2 AND LockID = 0 AND AccountLockStatusID != 3";
+	                              and RoleID = 2 AND LockID = 0 AND AccountLockStatusID = 0";
                 using (SqlDataAdapter da = new SqlDataAdapter(sqlText, conn))
                 {
                     da.SelectCommand.Parameters.AddWithValue("@Username", username);
