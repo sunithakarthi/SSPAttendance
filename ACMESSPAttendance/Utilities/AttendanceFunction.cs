@@ -4,6 +4,9 @@ using System.Data.SqlClient;
 using System.Configuration;
 using System.Net.Mail;
 using System.Web;
+using System.Runtime.InteropServices.ComTypes;
+using System.Threading;
+using System.Xml;
 
 namespace ACMESSPAttendance.Utilities
 {
@@ -558,7 +561,163 @@ namespace ACMESSPAttendance.Utilities
             return dtCourseEnrollInfo;
         }
 
+        public static bool IsDateDifference(DateTime startDate, DateTime endDate)
+        {
+            int dateDifference = (endDate - startDate).Days;
+            if (dateDifference > 0)
+            {
+                return true;
+            }
+            return false;
+        }
 
+        public static bool UpdateAutoSignOutAttendance(int UserID, DateTime dtTimein, DateTime dtTimeout, int ccid = 0)
+        {
+            int attendanceid = -1;
+            bool success = false;
+
+            using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["acme_aol_test_CS"].ConnectionString))
+            {
+                conn.Open();
+                string sqltext;
+                try
+                {
+                    sqltext = "SELECT AttendanceID From Attendance" +
+                        " WHERE UserID = @userid" +
+                        " AND TimeIn = @timein AND TimeOut IS NULL";
+                    SqlCommand cmd = new SqlCommand(sqltext, conn);
+                    cmd.Parameters.Add("@userid", SqlDbType.Int);
+                    cmd.Parameters["@userid"].Value = UserID;
+                    cmd.Parameters.Add("@timein", SqlDbType.DateTime);
+                    cmd.Parameters["@timein"].Value = Convert.ToDateTime(dtTimein);
+                    object obj = cmd.ExecuteScalar();
+
+                    //DateTime timeout = GetCurrentTimebyUserTimeZone(UserID);
+
+                    attendanceid = (int)obj;
+
+                    if(attendanceid > 0)
+                    {
+                        sqltext = @"UPDATE Attendance SET TimeOut = @timeout
+                                WHERE AttendanceID = @attendanceid";
+                        cmd = new SqlCommand(sqltext, conn);
+                        cmd.Parameters.Add("@timeout", SqlDbType.DateTime);
+                        cmd.Parameters[0].Value = dtTimeout;
+                        cmd.Parameters.Add("@attendanceid", SqlDbType.Int);
+                        cmd.Parameters[1].Value = attendanceid;
+                        cmd.ExecuteNonQuery();
+
+                        //Add a record to AttendanceDetail
+                        //Changed the attendance minutes subtract to minutes only, do not consider the seconds as full minute.
+                        int minutes = (dtTimeout.Hour - dtTimein.Hour) * 60 + (dtTimeout.Minute - dtTimein.Minute);
+                        cmd = new SqlCommand("at_InsertDetail", conn);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("@attendanceid", SqlDbType.Int);
+                        cmd.Parameters[0].Value = attendanceid;
+                        cmd.Parameters.Add("@contractcourseid", SqlDbType.Int);
+                        cmd.Parameters[1].Value = ccid;
+                        cmd.Parameters.Add("@minutes", SqlDbType.Int);
+                        cmd.Parameters[2].Value = minutes;
+                        cmd.Parameters.Add("@status", SqlDbType.Int);
+                        cmd.Parameters[3].Value = Status_InProgress;
+                        cmd.ExecuteNonQuery();
+
+                        //Add attendance log
+                        string studentText =
+                            "DECLARE @Password NVARCHAR(255); " +
+                            "SELECT @Password = [Password] FROM ACME_MAIN_TEST.dbo.[User] WHERE UserID = @UserID ; " +
+                            "INSERT INTO StudentSignInOut (UserID, [Password], SignInSignOut, CreateDateTime, AttendanceID, AdminUserID) " +
+                            "VALUES (@UserID, @Password, 1, GetDate(), @AttendanceID, @AdminUserID) ";
+                        cmd = new SqlCommand(studentText, conn);
+                        cmd.Parameters.AddWithValue("@UserID", UserID);
+                        cmd.Parameters.AddWithValue("@AttendanceID", attendanceid);
+                        cmd.Parameters.AddWithValue("@AdminUserID", attAdminUserID);
+                        cmd.ExecuteNonQuery();
+
+                        success = true;
+                    }
+                    cmd.Dispose();
+                }
+                catch (SqlException)
+                {
+                    success = false;
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+            return success;
+        }
+
+        public static bool UpdateAutoSigninAttendance(int UserID, DateTime dtTimein)
+        {
+            int attendanceid = -1;
+            bool success = false;
+
+            using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["acme_aol_test_CS"].ConnectionString))
+            {
+                conn.Open();
+                try
+                {
+                    SqlCommand cmd = new SqlCommand("at_InsertRecord_Check", conn);
+
+                    //DateTime timein = GetCurrentTimebyUserTimeZone(UserID);
+
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@userid", UserID);
+                    cmd.Parameters.Add("@timein", SqlDbType.DateTime);
+                    cmd.Parameters["@timein"].Value = dtTimein;
+                    cmd.Parameters.Add("@timeout", SqlDbType.DateTime);
+                    cmd.Parameters["@timeout"].Value = DBNull.Value;
+                    cmd.Parameters.Add("@attendanceid", SqlDbType.Int);
+                    cmd.Parameters["@attendanceid"].Direction = ParameterDirection.Output;
+                    cmd.ExecuteNonQuery();
+                    attendanceid = (int)cmd.Parameters["@attendanceid"].Value;
+
+                    string studentText =
+                        "DECLARE @Password NVARCHAR(255); " +
+                        "SELECT @Password = [Password] FROM ACME_MAIN_TEST.dbo.[User] WHERE UserID = @UserID ; " +
+                        "INSERT INTO StudentSignInOut (UserID, [Password], SignInSignOut, CreateDateTime, AttendanceID, AdminUserID) " +
+                        "VALUES (@UserID, @Password, 0, GetDate(), @AttendanceID, @AdminUserID) ";
+                    cmd = new SqlCommand(studentText, conn);
+                    cmd.Parameters.AddWithValue("@UserID", UserID);
+                    cmd.Parameters.AddWithValue("@AttendanceID", attendanceid);
+                    cmd.Parameters.AddWithValue("@AdminUserID", attAdminUserID);
+                    cmd.ExecuteNonQuery();
+
+                    success = true;
+                    cmd.Dispose();
+
+                }
+                catch (SqlException)
+                {
+                    success = false;
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+            return success;
+        }
+
+        /// <summary>
+        /// Gets the 12:00:00 instance of a DateTime
+        /// </summary>
+        public static DateTime AbsoluteStart(DateTime dateTime)
+        {
+            return dateTime.Date;
+        }
+
+        /// <summary>
+        /// Gets the 11:59:59 instance of a DateTime
+        /// </summary>
+        public static DateTime AbsoluteEnd(DateTime dateTime)
+        {
+            DateTime endDate = AbsoluteStart(dateTime).AddDays(1).AddTicks(-1);
+            return endDate.AddSeconds(-endDate.Second);
+        }
     }
 
 }

@@ -182,21 +182,55 @@ namespace ACMESSPAttendance
                 if (ddl_course.Items.Count > 0 && !string.IsNullOrEmpty(ddl_course.SelectedItem.Value))
                 {
                     ASPxlblwarningInfo.Text = "";
-                    isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
-                    //isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), 0);
-                    if (isSuccessSignOut)
+
+                    bool bDateDifference = AttendanceFunction.IsDateDifference(Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), DateTime.Now);
+
+                    if (!bDateDifference)
                     {
-                        ASPxlblInfo.Text = string.Format("You have successfully signed out at {0}.", Session[AttendanceFunction.SESS_TIMEIN].ToString());
-                        btn_Logout.Enabled = false;
-                        btn_Login.Enabled = true;
-                        btn_myALOCC.Visible = false;
-                        ddl_course.Enabled = true;
-                        GetStudentAttendanceDetails();
-                        ClearSession();
+                        isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
+                        //isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), 0);
+                        if (isSuccessSignOut)
+                        {
+                            ASPxlblInfo.Text = string.Format("You have successfully signed out at {0}.", Session[AttendanceFunction.SESS_TIMEIN].ToString());
+                            btn_Logout.Enabled = false;
+                            btn_Login.Enabled = true;
+                            btn_myALOCC.Visible = false;
+                            ddl_course.Enabled = true;
+                            GetStudentAttendanceDetails();
+                            ClearSession();
+                        }
+                        else
+                        {
+                            ASPxlblInfo.Text = "You sign out failed.";
+                        }
                     }
                     else
                     {
-                        ASPxlblInfo.Text = "You sign out failed.";
+                        DateTime dtTimeout = AttendanceFunction.AbsoluteEnd(Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]));
+                        AttendanceFunction.UpdateAutoSignOutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), dtTimeout, !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
+
+                        DateTime dtTimein = AttendanceFunction.AbsoluteStart(DateTime.Now);
+                        //dtTimeout = AttendanceFunction.AbsoluteEnd(DateTime.Now);
+
+                        DateTime dtCurrentTimeNow = DateTime.Now;
+
+                        AttendanceFunction.UpdateAutoSigninAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), dtTimein);
+                        
+                        isSuccessSignOut = AttendanceFunction.UpdateAutoSignOutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), dtTimein, dtCurrentTimeNow, !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
+                        if (isSuccessSignOut)
+                        {
+                            ASPxlblInfo.Text = string.Format("You have successfully signed out at {0}.", Session[AttendanceFunction.SESS_TIMEIN].ToString());
+                            btn_Logout.Enabled = false;
+                            btn_Login.Enabled = true;
+                            btn_myALOCC.Visible = false;
+                            ddl_course.Enabled = true;
+                            GetStudentAttendanceDetails();
+                            ClearSession();
+                        }
+                        else
+                        {
+                            ASPxlblInfo.Text = "You sign out failed.";
+                        }
                     }
                 }
                 else
@@ -204,7 +238,6 @@ namespace ACMESSPAttendance
                     ASPxlblInfo.Text = "";
                     ASPxlblwarningInfo.Text = "Please select course from the dropdownlist";
                 }
-
             }
             else
             {
