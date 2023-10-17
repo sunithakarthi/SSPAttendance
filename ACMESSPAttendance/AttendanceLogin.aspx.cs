@@ -216,7 +216,10 @@ namespace ACMESSPAttendance
 
                         AttendanceFunction.UpdateAutoSigninAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), dtTimein);
                         
-                        isSuccessSignOut = AttendanceFunction.UpdateAutoSignOutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), dtTimein, dtCurrentTimeNow, !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
+                                //isSuccessSignOut = AttendanceFunction.UpdateAutoSignOutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), dtTimein, dtCurrentTimeNow, !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
+
+                        isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), dtTimein, !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
+
                         if (isSuccessSignOut)
                         {
                             ASPxlblInfo.Text = string.Format("You have successfully signed out at {0}.", Session[AttendanceFunction.SESS_TIMEIN].ToString());

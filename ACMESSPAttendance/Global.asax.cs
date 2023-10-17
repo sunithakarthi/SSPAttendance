@@ -22,5 +22,10 @@ namespace ACMESSPAttendance
             AppContext.SetSwitch("Switch.System.Security.Cryptography.Pkcs.UseInsecureHashAlgorithms", true);
 
         }
+
+        void Session_Start(object sender, EventArgs e)
+        {
+            Session.Timeout = 1440; // We maintain session as 24 hours.
+        }
     }
 }
