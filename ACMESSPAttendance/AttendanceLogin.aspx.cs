@@ -169,6 +169,9 @@ namespace ACMESSPAttendance
 
         public void ASPxbtnSignOut_Click(object sender, EventArgs e)
         {
+            string exception = "Sign Out process : " + Environment.NewLine + "Session[AttendanceFunction.SESS_USERID] : " + Session[AttendanceFunction.SESS_USERID] + Environment.NewLine + "Session[AttendanceFunction.SESS_TIMEIN] : " + Session[AttendanceFunction.SESS_TIMEIN];
+            LogWriter.LogWrite(exception);
+
             if (Session[AttendanceFunction.SESS_USERID] != null && Session[AttendanceFunction.SESS_TIMEIN] != null)
             {
                 DateTime _signoutDatetime = DateTime.Now;

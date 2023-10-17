@@ -23,9 +23,9 @@ namespace ACMESSPAttendance
 
         }
 
-        void Session_Start(object sender, EventArgs e)
-        {
-            Session.Timeout = 1440; // We maintain session as 24 hours.
-        }
+        //void Session_Start(object sender, EventArgs e)
+        //{
+        //    Session.Timeout = 1440; // We maintain session as 24 hours.
+        //}
     }
 }
