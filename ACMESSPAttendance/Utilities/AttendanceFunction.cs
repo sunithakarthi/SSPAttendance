@@ -563,7 +563,7 @@ namespace ACMESSPAttendance.Utilities
 
         public static bool IsDateDifference(DateTime startDate, DateTime endDate)
         {
-            int dateDifference = (endDate - startDate).Days;
+            int dateDifference = (endDate.Date - startDate.Date).Days;
             if (dateDifference > 0)
             {
                 return true;

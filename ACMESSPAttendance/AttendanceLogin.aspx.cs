@@ -188,6 +188,9 @@ namespace ACMESSPAttendance
 
                     bool bDateDifference = AttendanceFunction.IsDateDifference(Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), DateTime.Now);
 
+                    string bDateDifference_exception = "Auto Sign Out process : " + Environment.NewLine + "Current date now : " + DateTime.Now + Environment.NewLine + "Session[AttendanceFunction.SESS_TIMEIN] : " + Session[AttendanceFunction.SESS_TIMEIN] + Environment.NewLine + "bDateDifference : " + bDateDifference;
+                    LogWriter.LogWrite(bDateDifference_exception);
+
                     if (!bDateDifference)
                     {
                         isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
