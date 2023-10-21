@@ -28,5 +28,7 @@ namespace ACMESSPAttendance.Model
         public int CVSAuthProviderID { get; set; }
         public int LockID { get; set; } // This field used for User Active/Inactive in ACME.
         public int AccountLockStatusID { get; set; } // This Field used for User locked by Admin in ACME. This is called as Locked Student.
+
+        public int SSPUserSessionID { get; set; }
     }
 }

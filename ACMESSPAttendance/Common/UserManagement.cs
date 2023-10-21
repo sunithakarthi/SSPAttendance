@@ -183,6 +183,27 @@ namespace ACMESSPAttendance
                 cmd.ExecuteNonQuery();
                 user.SessionId = (int)cmd.Parameters["@UserSessionID"].Value;
 
+                /* Add SSP UserSession */
+                conn.Close();
+                conn = new SqlConnection(ConfigurationManager.ConnectionStrings["acme_aol_test_CS"].ConnectionString);
+                conn.Open();
+
+                cmd = new SqlCommand("SSP_SSPUserSession", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.Add("@mode", SqlDbType.NVarChar);
+                cmd.Parameters.Add("@UserID", SqlDbType.Int);
+                cmd.Parameters.Add("@SessionID", SqlDbType.Int);
+                cmd.Parameters.Add("@ProjectTypeID", SqlDbType.Int);
+                cmd.Parameters.Add("@status", SqlDbType.Int);
+                cmd.Parameters[0].Value = "Insert_SSPUserSession";
+                cmd.Parameters[1].Value = user.UserId;
+                cmd.Parameters[2].Value = user.SessionId;
+                cmd.Parameters[3].Value = 3;
+                cmd.Parameters[4].Direction = ParameterDirection.Output;
+                cmd.ExecuteNonQuery();
+                user.SSPUserSessionID = (int)cmd.Parameters["@status"].Value;
+
                 return user;
 
                 #endregion

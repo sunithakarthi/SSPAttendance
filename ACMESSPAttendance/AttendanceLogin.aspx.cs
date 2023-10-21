@@ -202,6 +202,9 @@ namespace ACMESSPAttendance
                             btn_Login.Enabled = true;
                             btn_myALOCC.Visible = false;
                             ddl_course.Enabled = true;
+
+                            SignOut();
+
                             GetStudentAttendanceDetails();
                             ClearSession();
                         }
@@ -233,6 +236,7 @@ namespace ACMESSPAttendance
                             btn_Login.Enabled = true;
                             btn_myALOCC.Visible = false;
                             ddl_course.Enabled = true;
+                            SignOut();
                             GetStudentAttendanceDetails();
                             ClearSession();
                         }
@@ -251,8 +255,14 @@ namespace ACMESSPAttendance
             else
             {
                 ASPxlblInfo.Text = "";
-                ASPxlblwarningInfo.Text = "please sign in";
+                ASPxlblwarningInfo.Text = "Your session cleared. Please sign in again and continue it.";
                 ClearSession();
+
+                btn_Logout.Enabled = false;
+                btn_Login.Enabled = true;
+                btn_myALOCC.Visible = false;
+                ddl_course.Enabled = true;
+                GetStudentAttendanceDetails();
             }
         }
 
@@ -419,6 +429,56 @@ namespace ACMESSPAttendance
 
             }
             return hasCourse;
+        }
+
+        private void SignIn()
+        {
+            var user = UserManagement.GetUser();
+
+            if (user != null && user.UserId > 0)
+            {
+                /* Add SSP UserSession */
+                SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["acme_aol_test_CS"].ConnectionString);
+                conn.Open();
+
+                SqlCommand cmd = new SqlCommand("SSP_SSPUserSession", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.Add("@mode", SqlDbType.NVarChar);
+                cmd.Parameters.Add("@UserID", SqlDbType.Int);
+                cmd.Parameters.Add("@SessionID", SqlDbType.Int);
+                cmd.Parameters.Add("@ProjectTypeID", SqlDbType.Int);
+                cmd.Parameters.Add("@status", SqlDbType.Int);
+                cmd.Parameters[0].Value = "Insert_SSPUserSession";
+                cmd.Parameters[1].Value = user.UserId;
+                cmd.Parameters[2].Value = user.SessionId;
+                cmd.Parameters[3].Value = 3;
+                cmd.Parameters[4].Direction = ParameterDirection.Output;
+                cmd.ExecuteNonQuery();
+                user.SSPUserSessionID = (int)cmd.Parameters["@status"].Value;
+            }
+        }
+
+        private void SignOut()
+        {
+            var user = UserManagement.GetUser();
+
+            if (user != null && user.UserId > 0)
+            {
+                /* Update SSP UserSession */
+                SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["acme_main_test_CS"].ConnectionString);
+                conn = new SqlConnection(ConfigurationManager.ConnectionStrings["acme_aol_test_CS"].ConnectionString);
+                conn.Open();
+
+                SqlCommand cmd = new SqlCommand("SSP_SSPUserSession", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.Add("@mode", SqlDbType.NVarChar);
+                cmd.Parameters.Add("@SSPUserSessionID", SqlDbType.Int);
+                cmd.Parameters[0].Value = "Update_SSPUserSession";
+                cmd.Parameters[1].Value = user.SSPUserSessionID;
+                cmd.ExecuteNonQuery();
+            }
         }
 
     }
