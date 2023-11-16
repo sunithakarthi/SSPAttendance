@@ -399,7 +399,8 @@ namespace ACMESSPAttendance.Utilities
 
                     //Add a record to AttendanceDetail
                     //Changed the attendance minutes subtract to minutes only, do not consider the seconds as full minute.
-                    int minutes = (timeout.Hour - dtTimein.Hour) * 60 + (timeout.Minute - dtTimein.Minute);
+                    //int minutes = (timeout.Hour - dtTimein.Hour) * 60 + (timeout.Minute - dtTimein.Minute);
+                    int minutes = Convert.ToInt16((timeout - dtTimein).TotalMinutes);
                     cmd = new SqlCommand("at_InsertDetail", conn);
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add("@attendanceid", SqlDbType.Int);
@@ -609,7 +610,8 @@ namespace ACMESSPAttendance.Utilities
 
                         //Add a record to AttendanceDetail
                         //Changed the attendance minutes subtract to minutes only, do not consider the seconds as full minute.
-                        int minutes = (dtTimeout.Hour - dtTimein.Hour) * 60 + (dtTimeout.Minute - dtTimein.Minute);
+                        //int minutes = (dtTimeout.Hour - dtTimein.Hour) * 60 + (dtTimeout.Minute - dtTimein.Minute);
+                        int minutes = Convert.ToInt16((dtTimeout - dtTimein).TotalMinutes);
                         cmd = new SqlCommand("at_InsertDetail", conn);
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add("@attendanceid", SqlDbType.Int);
