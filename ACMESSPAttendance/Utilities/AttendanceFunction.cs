@@ -256,7 +256,8 @@ namespace ACMESSPAttendance.Utilities
                     conn.Open();
                     string sqlText = @"SELECT AttendanceID, TimeIn From Attendance
                                  WHERE UserID = @userid
-                                 AND CONVERT(date, TimeIn) = CONVERT(date, @CurrentTime) AND TimeOut IS NULL 
+                                 AND (CONVERT(date, TimeIn) = CONVERT(date, @CurrentTime) or DATEDIFF(Hour,TimeIn, @CurrentTime) <= 24 )
+                                 AND TimeOut IS NULL 
                                  Order by AttendanceID desc";
                     using (SqlCommand cmd = new SqlCommand(sqlText, conn))
                     {
@@ -440,7 +441,7 @@ namespace ACMESSPAttendance.Utilities
             return success;
         }
 
-        public static DateTime GetCurrentTimebyUserTimeZone(int UserID)
+        public static DateTime GetCurrentTimebyUserTimeZone(int UserID, bool bUpdateSessionTimeIn = true)
         {
             //The default time is EST, which get from server time.
             DateTime curTime = DateTime.Now;
@@ -468,7 +469,10 @@ namespace ACMESSPAttendance.Utilities
                 default:
                     break;
             }
-            HttpContext.Current.Session[SESS_TIMEIN] = curTime;
+            if (bUpdateSessionTimeIn) 
+            {
+                HttpContext.Current.Session[SESS_TIMEIN] = curTime;
+            }
             return curTime;
         }
 

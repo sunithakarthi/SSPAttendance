@@ -55,6 +55,7 @@ namespace ACMESSPAttendance
                 }
             }
             GetStudentAttendanceDetails();
+            btn_Logout.Enabled = false;
         }
 
         private void FillLogin(int id)
@@ -174,21 +175,14 @@ namespace ACMESSPAttendance
 
             if (Session[AttendanceFunction.SESS_USERID] != null && Session[AttendanceFunction.SESS_TIMEIN] != null)
             {
-                DateTime _signoutDatetime = DateTime.Now;
-                DateTime? signoutDatetime = null;
-                if (DateTime.TryParse(hdnloggedhours.Value, out _signoutDatetime))
-                {
-                    signoutDatetime = Convert.ToDateTime(_signoutDatetime);
-                }
-
                 bool isSuccessSignOut = false;
                 if (ddl_course.Items.Count > 0 && !string.IsNullOrEmpty(ddl_course.SelectedItem.Value))
                 {
                     ASPxlblwarningInfo.Text = "";
 
-                    bool bDateDifference = AttendanceFunction.IsDateDifference(Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), DateTime.Now);
+                    bool bDateDifference = AttendanceFunction.IsDateDifference(Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), GetCurrentTimebyUserTimeZone());
 
-                    string bDateDifference_exception = "Auto Sign Out process : " + Environment.NewLine + "Current date now : " + DateTime.Now + Environment.NewLine + "Session[AttendanceFunction.SESS_TIMEIN] : " + Session[AttendanceFunction.SESS_TIMEIN] + Environment.NewLine + "bDateDifference : " + bDateDifference;
+                    string bDateDifference_exception = "Auto Sign Out process : " + Environment.NewLine + "Current date now : " + GetCurrentTimebyUserTimeZone() + Environment.NewLine + "Session[AttendanceFunction.SESS_TIMEIN] : " + Session[AttendanceFunction.SESS_TIMEIN] + Environment.NewLine + "bDateDifference : " + bDateDifference;
                     LogWriter.LogWrite(bDateDifference_exception);
 
                     if (!bDateDifference)
@@ -218,14 +212,9 @@ namespace ACMESSPAttendance
                         DateTime dtTimeout = AttendanceFunction.AbsoluteEnd(Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]));
                         AttendanceFunction.UpdateAutoSignOutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), dtTimeout, !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
 
-                        DateTime dtTimein = AttendanceFunction.AbsoluteStart(DateTime.Now);
-                        //dtTimeout = AttendanceFunction.AbsoluteEnd(DateTime.Now);
-
-                        DateTime dtCurrentTimeNow = DateTime.Now;
+                        DateTime dtTimein = AttendanceFunction.AbsoluteStart(GetCurrentTimebyUserTimeZone());
 
                         AttendanceFunction.UpdateAutoSigninAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), dtTimein);
-                        
-                                //isSuccessSignOut = AttendanceFunction.UpdateAutoSignOutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), dtTimein, dtCurrentTimeNow, !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
 
                         isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), dtTimein, !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
 
@@ -399,7 +388,7 @@ namespace ACMESSPAttendance
 
         private DateTime GetCurrentTimebyUserTimeZone()
         {
-            return AttendanceFunction.GetCurrentTimebyUserTimeZone(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]));
+            return AttendanceFunction.GetCurrentTimebyUserTimeZone(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), false);
         }
 
         private bool PopulateCourse()
