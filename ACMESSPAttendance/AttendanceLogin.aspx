@@ -316,10 +316,10 @@
                                             <table id="records" class="scrolldown table-bordered">
                                                 <thead>
                                                     <tr>
-                                                        <th class=" border-right tableheader">DATE</th>
-                                                        <th class=" border-right tableheader">START TIME</th>
-                                                        <th class=" border-right tableheader">END TIME</th>
-                                                        <th class=" border-right tableheader">TIME STUDIED</th>
+                                                        <th class=" border-right tableheader">Date</th>
+                                                        <th class=" border-right tableheader">Start Time</th>
+                                                        <th class=" border-right tableheader">End Time</th>
+                                                        <th class=" border-right tableheader">Time Studied</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
