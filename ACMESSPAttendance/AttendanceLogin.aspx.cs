@@ -42,6 +42,10 @@ namespace ACMESSPAttendance
                     {
                         FillLogin(userid);
                     }
+                    else
+                    {
+                        ClearAllSession();
+                    }
                 }
                 string _username = txt_Username.Text.Trim();
                 string _password = txt_Password.Text.Trim();
@@ -53,8 +57,8 @@ namespace ACMESSPAttendance
                         PopulateCourse();
                     }
                 }
+                GetStudentAttendanceDetails();
             }
-            GetStudentAttendanceDetails();
             btn_Logout.Enabled = false;
         }
 
@@ -86,7 +90,7 @@ namespace ACMESSPAttendance
                         txt_Username.Text = username;
                         txt_Password.Attributes.Add("value", password);
                         txt_Password.Text = password;
-                        SetUserSession(txt_Username.Text?.Trim(), password?.Trim());
+                        //SetUserSession(txt_Username.Text?.Trim(), password?.Trim());
                     }
                     conn.Close();
                 }                
@@ -267,6 +271,13 @@ namespace ACMESSPAttendance
             Session.Remove(Utility.SessionUserNameKey);
         }
 
+        bool ClearAllSession()
+        {
+            Session.Clear();
+            Session.Abandon();
+            return true;
+        }
+
         protected void ASPxbtnmyALOCC_Click(object sender, EventArgs e) 
         {
             Response.Redirect("Canvas.aspx");
@@ -292,15 +303,22 @@ namespace ACMESSPAttendance
         {
             try
             {
-                var userdetails = UserManagement.GetUser();                                                      
-                if (userdetails != null)
+
+                int LoggedUserID = 0;
+
+                if(Session[AttendanceFunction.SESS_USERID] != null)
+                {
+                    LoggedUserID = Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]);
+                }
+                
+                if (LoggedUserID > 0)
                 {
                     SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["acme_aol_test_CS"].ConnectionString);
                     using (var db = con)
                     {
                         var param = new DynamicParameters();
 
-                        param.Add("@UserID", userdetails.UserId);
+                        param.Add("@UserID", LoggedUserID);
 
                         try
                         {
@@ -335,8 +353,15 @@ namespace ACMESSPAttendance
 
         protected void rpt_Records_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            var currentUser = UserManagement.GetUser();
-            if (currentUser != null)
+
+            int LoggedUserID = 0;
+
+            if (Session[AttendanceFunction.SESS_USERID] != null)
+            {
+                LoggedUserID = Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]);
+            }
+
+            if (LoggedUserID > 0)
             {
                 if (rpt_Records.Items.Count < 1)
                 {
@@ -454,6 +479,8 @@ namespace ACMESSPAttendance
 
             if (user != null && user.UserId > 0)
             {
+                DateTime currentDatetime = AttendanceFunction.GetCurrentTimebyUserTimeZone(user.UserId, false);
+
                 /* Update SSP UserSession */
                 SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["acme_main_test_CS"].ConnectionString);
                 conn = new SqlConnection(ConfigurationManager.ConnectionStrings["acme_aol_test_CS"].ConnectionString);
@@ -463,9 +490,11 @@ namespace ACMESSPAttendance
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.Add("@mode", SqlDbType.NVarChar);
+                cmd.Parameters.Add("@CurrentDateTime", SqlDbType.DateTime);
                 cmd.Parameters.Add("@SSPUserSessionID", SqlDbType.Int);
                 cmd.Parameters[0].Value = "Update_SSPUserSession";
-                cmd.Parameters[1].Value = user.SSPUserSessionID;
+                cmd.Parameters[1].Value = currentDatetime;
+                cmd.Parameters[2].Value = user.SSPUserSessionID;
                 cmd.ExecuteNonQuery();
             }
         }

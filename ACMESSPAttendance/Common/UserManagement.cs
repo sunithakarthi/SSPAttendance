@@ -1,5 +1,6 @@
 ﻿using ACMESSPAttendance.Common;
 using ACMESSPAttendance.Model;
+using ACMESSPAttendance.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -183,6 +184,8 @@ namespace ACMESSPAttendance
                 cmd.ExecuteNonQuery();
                 user.SessionId = (int)cmd.Parameters["@UserSessionID"].Value;
 
+                DateTime currentDatetime = AttendanceFunction.GetCurrentTimebyUserTimeZone(user.UserId, false);
+
                 /* Add SSP UserSession */
                 conn.Close();
                 conn = new SqlConnection(ConfigurationManager.ConnectionStrings["acme_aol_test_CS"].ConnectionString);
@@ -195,12 +198,14 @@ namespace ACMESSPAttendance
                 cmd.Parameters.Add("@UserID", SqlDbType.Int);
                 cmd.Parameters.Add("@SessionID", SqlDbType.Int);
                 cmd.Parameters.Add("@ProjectTypeID", SqlDbType.Int);
+                cmd.Parameters.Add("@CurrentDateTime", SqlDbType.DateTime);
                 cmd.Parameters.Add("@status", SqlDbType.Int);
                 cmd.Parameters[0].Value = "Insert_SSPUserSession";
                 cmd.Parameters[1].Value = user.UserId;
                 cmd.Parameters[2].Value = user.SessionId;
                 cmd.Parameters[3].Value = 3;
-                cmd.Parameters[4].Direction = ParameterDirection.Output;
+                cmd.Parameters[4].Value = currentDatetime;
+                cmd.Parameters[5].Direction = ParameterDirection.Output;
                 cmd.ExecuteNonQuery();
                 user.SSPUserSessionID = (int)cmd.Parameters["@status"].Value;
 
