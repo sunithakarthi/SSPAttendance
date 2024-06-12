@@ -1,0 +1,20 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/StudentSuccessPortalAttendance/v17
+/.vs/VSWorkspaceState.json
+/packages
+/ACMESSPAttendance/bin/ACMESSPAttendance.dll
+/ACMESSPAttendance/bin/ACMESSPAttendance.dll.config
+/ACMESSPAttendance/bin/ACMESSPAttendance.pdb
+/ACMESSPAttendance/bin/Dapper.dll
+/ACMESSPAttendance/bin/Dapper.xml
+/ACMESSPAttendance/bin/System.IO.dll
+/ACMESSPAttendance/bin/System.Runtime.dll
+/ACMESSPAttendance/Properties/PublishProfiles/FolderProfile.pubxml
+/ACMESSPAttendance/Properties/PublishProfiles/FolderProfile.pubxml.user
+/ACMESSPAttendance/Content
+/.vs/ACMESSPAttendance/FileContentIndex
+/.vs/ACMESSPAttendance/v17/.suo
+/ACMESSPAttendance/obj/Release
