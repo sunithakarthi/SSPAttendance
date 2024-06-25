@@ -184,7 +184,7 @@ namespace ACMESSPAttendance
                 cmd.ExecuteNonQuery();
                 user.SessionId = (int)cmd.Parameters["@UserSessionID"].Value;
 
-                DateTime currentDatetime = AttendanceFunction.GetCurrentTimebyUserTimeZone(user.UserId, false);
+                DateTime currentDatetime = AttendanceFunction.GetCurrentTimebyUserTimeZone(user.UserId);
 
                 /* Add SSP UserSession */
                 conn.Close();
@@ -240,14 +240,6 @@ namespace ACMESSPAttendance
                     da.SelectCommand.Parameters.AddWithValue("@Username", username);
                     da.SelectCommand.Parameters.AddWithValue("@Password", password);
                     da.Fill(dtUser);
-
-                    //if (dtUser != null && dtUser.Rows.Count > 0)
-                    //{
-                    //    HttpContext.Current.Session[SESS_USERID] = dtUser.Rows[0]["UserID"];
-                    //    HttpContext.Current.Session[SESS_SCHOOLID] = dtUser.Rows[0]["SchoolID"];
-                    //    isSchoolHolidayBlocked = CheckIsSchoolHolidayBlocked(Convert.ToInt32(dtUser.Rows[0]["UserID"]), Convert.ToInt32(dtUser.Rows[0]["SchoolID"]));
-                       bValid = true;
-                    //}
                 }
                 conn.Close();
             }

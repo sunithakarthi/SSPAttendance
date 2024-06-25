@@ -284,7 +284,7 @@
                                     <asp:HiddenField ID="hdnloggedhours" runat="server" />
                                     <div class="form-group text-center mb-3">
 
-                                        <asp:Button ID="btn_Login" runat="server" CausesValidation="False" OnClick="ASPxbtnSignin_Click" CssClass="btn btn-primary btn-lg width-lg btn-rounded" Text="Sign In" Width="100%"></asp:Button>
+                                        <asp:Button ID="btn_Login" runat="server" CausesValidation="False" OnClick="ASPxbtnSignin_Click" CssClass="btn btn-primary btn-lg width-lg btn-rounded" Text="Sign In" Width="100%" ></asp:Button>
 
                                         <asp:Button ID="btn_Logout" runat="server" CausesValidation="False" OnClick="ASPxbtnSignOut_Click" OnClientClick="stopTimer();" CssClass="btn btn-primary btn-lg width-lg btn-rounded" Text="Sign Out" Width="100%"></asp:Button>
                                     </div>

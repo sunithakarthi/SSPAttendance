@@ -111,7 +111,7 @@ namespace ACMESSPAttendance
             {
                 if (!isSchHolidayBlocked)
                 {
-                    if (AttendanceFunction.GetSignInStatus(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID])))
+                    if (AttendanceFunction.GetSignInStatus(GetCurrentUserID()))
                     {
                         ASPxlblInfo.Text = "You did not sign out yet. Please sign out first.";
                         btn_Logout.Enabled = true;
@@ -124,7 +124,7 @@ namespace ACMESSPAttendance
 
                         if (ddl_course.Items.Count > 0 && !string.IsNullOrEmpty(ddl_course.SelectedItem.Value))
                         {
-                            isSuccessSignIn = AttendanceFunction.RecordSigninAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]));
+                            isSuccessSignIn = AttendanceFunction.RecordSigninAttendance(GetCurrentUserID());
                             if (isSuccessSignIn)
                             {
                                 ASPxlblInfo.Text = string.Format("You have successfully signed in at {0}.", Session[AttendanceFunction.SESS_TIMEIN].ToString());
@@ -174,28 +174,27 @@ namespace ACMESSPAttendance
 
         public void ASPxbtnSignOut_Click(object sender, EventArgs e)
         {
-            string exception = "Sign Out process : " + Environment.NewLine + "Session[AttendanceFunction.SESS_USERID] : " + Session[AttendanceFunction.SESS_USERID] + Environment.NewLine + "Session[AttendanceFunction.SESS_TIMEIN] : " + Session[AttendanceFunction.SESS_TIMEIN];
+            string exception = "Sign Out process : " + Environment.NewLine + "Current UserID : " + GetCurrentUserID() + Environment.NewLine + "Session[AttendanceFunction.SESS_TIMEIN] : " + GetSignInDateTime();
             LogWriter.LogWrite(exception);
 
-            if (Session[AttendanceFunction.SESS_USERID] != null && Session[AttendanceFunction.SESS_TIMEIN] != null)
+            if (GetCurrentUserID() > 0 && GetSignInDateTime() != DateTime.MinValue)
             {
                 bool isSuccessSignOut = false;
                 if (ddl_course.Items.Count > 0 && !string.IsNullOrEmpty(ddl_course.SelectedItem.Value))
                 {
                     ASPxlblwarningInfo.Text = "";
 
-                    bool bDateDifference = AttendanceFunction.IsDateDifference(Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), GetCurrentTimebyUserTimeZone());
+                    bool bDateDifference = AttendanceFunction.IsDateDifference(GetSignInDateTime(), GetCurrentTimebyUserTimeZone());
 
-                    string bDateDifference_exception = "Auto Sign Out process : " + Environment.NewLine + "Current date now : " + GetCurrentTimebyUserTimeZone() + Environment.NewLine + "Session[AttendanceFunction.SESS_TIMEIN] : " + Session[AttendanceFunction.SESS_TIMEIN] + Environment.NewLine + "bDateDifference : " + bDateDifference;
+                    string bDateDifference_exception = "Auto Sign Out process : " + Environment.NewLine + "Current date now : " + GetCurrentTimebyUserTimeZone() + Environment.NewLine + "Session[AttendanceFunction.SESS_TIMEIN] : " + GetSignInDateTime() + Environment.NewLine + "bDateDifference : " + bDateDifference;
                     LogWriter.LogWrite(bDateDifference_exception);
 
                     if (!bDateDifference)
                     {
-                        isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
-                        //isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), 0);
+                        isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(GetCurrentUserID(), GetSignInDateTime(), !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
                         if (isSuccessSignOut)
                         {
-                            ASPxlblInfo.Text = string.Format("You have successfully signed out at {0}.", Session[AttendanceFunction.SESS_TIMEIN].ToString());
+                            ASPxlblInfo.Text = string.Format("You have successfully signed out at {0}.", Session[AttendanceFunction.SESS_TIMEOUT].ToString());
                             btn_Logout.Enabled = false;
                             btn_Login.Enabled = true;
                             btn_myALOCC.Visible = false;
@@ -213,18 +212,18 @@ namespace ACMESSPAttendance
                     }
                     else
                     {
-                        DateTime dtTimeout = AttendanceFunction.AbsoluteEnd(Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]));
-                        AttendanceFunction.UpdateAutoSignOutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), Convert.ToDateTime(Session[AttendanceFunction.SESS_TIMEIN]), dtTimeout, !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
+                        DateTime dtTimeout = AttendanceFunction.AbsoluteEnd(GetSignInDateTime());
+                        AttendanceFunction.UpdateAutoSignOutAttendance(GetCurrentUserID(), GetSignInDateTime(), dtTimeout, !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
 
                         DateTime dtTimein = AttendanceFunction.AbsoluteStart(GetCurrentTimebyUserTimeZone());
 
-                        AttendanceFunction.UpdateAutoSigninAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), dtTimein);
+                        AttendanceFunction.UpdateAutoSigninAttendance(GetCurrentUserID(), dtTimein);
 
-                        isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), dtTimein, !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
+                        isSuccessSignOut = AttendanceFunction.RecordSignoutAttendance(GetCurrentUserID(), dtTimein, !string.IsNullOrEmpty(ddl_course.SelectedItem.Value) ? Convert.ToInt32(ddl_course.SelectedItem.Value) : 0);
 
                         if (isSuccessSignOut)
                         {
-                            ASPxlblInfo.Text = string.Format("You have successfully signed out at {0}.", Session[AttendanceFunction.SESS_TIMEIN].ToString());
+                            ASPxlblInfo.Text = string.Format("You have successfully signed out at {0}.", Session[AttendanceFunction.SESS_TIMEOUT].ToString());
                             btn_Logout.Enabled = false;
                             btn_Login.Enabled = true;
                             btn_myALOCC.Visible = false;
@@ -306,9 +305,9 @@ namespace ACMESSPAttendance
 
                 int LoggedUserID = 0;
 
-                if(Session[AttendanceFunction.SESS_USERID] != null)
+                if(GetCurrentUserID() > 0)
                 {
-                    LoggedUserID = Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]);
+                    LoggedUserID = GetCurrentUserID();
                 }
                 
                 if (LoggedUserID > 0)
@@ -356,9 +355,9 @@ namespace ACMESSPAttendance
 
             int LoggedUserID = 0;
 
-            if (Session[AttendanceFunction.SESS_USERID] != null)
+            if (GetCurrentUserID() > 0)
             {
-                LoggedUserID = Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]);
+                LoggedUserID = GetCurrentUserID();
             }
 
             if (LoggedUserID > 0)
@@ -413,15 +412,15 @@ namespace ACMESSPAttendance
 
         private DateTime GetCurrentTimebyUserTimeZone()
         {
-            return AttendanceFunction.GetCurrentTimebyUserTimeZone(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]), false);
+            return AttendanceFunction.GetCurrentTimebyUserTimeZone(GetCurrentUserID());
         }
 
         private bool PopulateCourse()
         {
             bool hasCourse = false;
-            if (Session[AttendanceFunction.SESS_USERID] != null)
+            if (GetCurrentUserID() > 0)
             {
-                DataTable dtStudCourse = AttendanceFunction.GetStudentCourse(Convert.ToInt32(Session[AttendanceFunction.SESS_USERID]));
+                DataTable dtStudCourse = AttendanceFunction.GetStudentCourse(GetCurrentUserID());
 
                 ddl_course.Items.Clear();
                 if (dtStudCourse != null && dtStudCourse.Rows.Count > 0)
@@ -479,7 +478,7 @@ namespace ACMESSPAttendance
 
             if (user != null && user.UserId > 0)
             {
-                DateTime currentDatetime = AttendanceFunction.GetCurrentTimebyUserTimeZone(user.UserId, false);
+                DateTime currentDatetime = AttendanceFunction.GetCurrentTimebyUserTimeZone(user.UserId);
 
                 /* Update SSP UserSession */
                 SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["acme_main_test_CS"].ConnectionString);
@@ -498,6 +497,47 @@ namespace ACMESSPAttendance
                 cmd.ExecuteNonQuery();
             }
         }
-
+        private int GetCurrentUserID()
+        {
+            int UserID = Convert.ToInt32(Request.QueryString["userid"]);
+            return UserID;
+        }
+        private DateTime GetSignInDateTime()
+        {
+            int UserID = Convert.ToInt32(Request.QueryString["userid"]);
+            DateTime SignInDateTime = DateTime.MinValue;
+            try
+            {
+                DateTime currentTime = AttendanceFunction.GetCurrentTimebyUserTimeZone(UserID);
+                using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["acme_aol_test_CS"].ConnectionString))
+                {
+                    conn.Open();
+                    string sqlText = @"SELECT AttendanceID, TimeIn From Attendance
+                                 WHERE UserID = @userid
+                                 AND (CONVERT(date, TimeIn) = CONVERT(date, @CurrentTime) or DATEDIFF(Hour,TimeIn, @CurrentTime) <= 24 )
+                                 AND TimeOut IS NULL 
+                                 Order by AttendanceID desc";
+                    using (SqlCommand cmd = new SqlCommand(sqlText, conn))
+                    {
+                        cmd.Parameters.Add("@userid", SqlDbType.Int);
+                        cmd.Parameters["@userid"].Value = UserID;
+                        cmd.Parameters.Add("@CurrentTime", SqlDbType.DateTime);
+                        cmd.Parameters["@CurrentTime"].Value = currentTime;
+                        SqlDataReader dreader = cmd.ExecuteReader();
+                        if (dreader.HasRows && dreader.Read())
+                        {
+                            SignInDateTime = dreader.GetDateTime(1);
+                        }
+                        dreader.Dispose();
+                        dreader.Close();
+                    }
+                    conn.Close();
+                }
+            }
+            catch (SqlException)
+            {
+            }
+            return SignInDateTime;
+        }
     }
 }

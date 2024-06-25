@@ -20,6 +20,7 @@ namespace ACMESSPAttendance.Utilities
         public const string SESS_USERID = "SignInUserID";
         public const string SESS_SCHOOLID = "SignInUserSchoolID";
         public const string SESS_TIMEIN = "SignIn_Time";
+        public const string SESS_TIMEOUT = "SignOut_Time";
 
         public const string OFFICE365_API_URL = "https://mail.academyoflearning.net/User/CreateOffice/";
         public const string OFFICE365_API_AUTH_KEY = "56f7c85a-e195-4fcb-af35-06f5baf902f6";
@@ -304,7 +305,7 @@ namespace ACMESSPAttendance.Utilities
                 {
                     SqlCommand cmd = new SqlCommand("at_InsertRecord_Check", conn);
 
-                    DateTime timein = GetCurrentTimebyUserTimeZone(UserID);
+                    DateTime timein = GetCurrentTimebyUserTimeZone(UserID,true);
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@userid", UserID);
                     cmd.Parameters.Add("@timein", SqlDbType.DateTime);
@@ -369,7 +370,7 @@ namespace ACMESSPAttendance.Utilities
                     cmd.Parameters["@timein"].Value = Convert.ToDateTime(dtTimein);
                     object obj = cmd.ExecuteScalar();
 
-                    DateTime timeout = GetCurrentTimebyUserTimeZone(UserID);
+                    DateTime timeout = GetCurrentTimebyUserTimeZone(UserID,false,true);
                     if (obj != null)    // update record in Attendance
                     {
                         attendanceid = (int)obj;
@@ -441,7 +442,7 @@ namespace ACMESSPAttendance.Utilities
             return success;
         }
 
-        public static DateTime GetCurrentTimebyUserTimeZone(int UserID, bool bUpdateSessionTimeIn = true)
+        public static DateTime GetCurrentTimebyUserTimeZone(int UserID, bool bSessionTimeIn = false, bool bSessionTimeOut = false)
         {
             //The default time is EST, which get from server time.
             DateTime curTime = DateTime.Now;
@@ -469,10 +470,16 @@ namespace ACMESSPAttendance.Utilities
                 default:
                     break;
             }
-            if (bUpdateSessionTimeIn) 
+            if (bSessionTimeIn) 
             {
                 HttpContext.Current.Session[SESS_TIMEIN] = curTime;
             }
+
+            if (bSessionTimeOut)
+            {
+                HttpContext.Current.Session[SESS_TIMEOUT] = curTime;
+            }
+
             return curTime;
         }
 
