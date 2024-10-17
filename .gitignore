@@ -46,3 +46,4 @@
 /ACMESSPAttendance/obj/Release/_WPPLastBuildInfo.txt
 /ACMESSPAttendance/Properties/PublishProfiles/FolderProfile.pubxml
 /ACMESSPAttendance/Properties/PublishProfiles/FolderProfile.pubxml.user
+*.json

@@ -12,9 +12,9 @@
     <asp:PlaceHolder runat="server">
         <%: Scripts.Render("~/bundles/modernizr") %>
     </asp:PlaceHolder>
-
+    
     <webopt:BundleReference runat="server" Path="~/Content/css" />
-    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <link href="Images/AOLCCFavicon.png" rel="shortcut icon" type="image/x-icon" />
     <style type="text/css">
         .sspimg {
             max-width: 500px;
