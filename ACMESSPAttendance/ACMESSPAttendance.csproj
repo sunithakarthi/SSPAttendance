@@ -184,6 +184,7 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="Images\AOLCCFavicon.png" />
     <Content Include="Images\attendance.jpg" />
     <Content Include="Images\bgimage.jpg" />
     <Content Include="Images\homepage.jpg" />
