@@ -135,7 +135,6 @@ namespace ACMESSPAttendance.Utilities
         {
             bool bValid = false;
             DataTable dtUser = new DataTable();
-            DataTable dtUserID = new DataTable();
             DataTable dtUserName = new DataTable();
             using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["acme_aol_test_CS"].ConnectionString))
             {
@@ -143,27 +142,15 @@ namespace ACMESSPAttendance.Utilities
 
                 if (username.Contains("@my-aolcc.com"))
                 {
-                    string sqlQuery = "SELECT top 1  UserID from[ACME_AOL_TEST].[dbo].UserDetail where AOLEmail = @email";
+                    string sqlQuery = @"SELECT Top 1 U.Username from [ACME_MAIN_TEST].[dbo].[User] U inner join [ACME_AOL_TEST].[dbo].UserDetail UD on U.UserID = UD.UserID where UD.AOLEmail = @email";
+
                     using (SqlDataAdapter da = new SqlDataAdapter(sqlQuery, conn))
                     {
                         da.SelectCommand.Parameters.AddWithValue("@email", username);
-                        da.Fill(dtUserID);
-
-                        if (dtUserID != null && dtUserID.Rows.Count > 0)
+                        da.Fill(dtUserName);
+                        if (dtUserName != null && dtUserName.Rows.Count > 0)
                         {
-                            var userId = dtUserID.Rows[0]["UserID"];
-
-                            string sqlquery = "SELECT Top 1 username from [ACME_MAIN_TEST].[dbo].[User] where userid=@userid";
-                            using (SqlDataAdapter daa = new SqlDataAdapter(sqlquery, conn))
-                            {
-                                daa.SelectCommand.Parameters.AddWithValue("@userid", userId);
-                                daa.Fill(dtUserName);
-                                if(dtUserName!=null && dtUserName.Rows.Count>0)
-                                {
-                                    username = dtUserName.Rows[0]["UserName"].ToString();
-                                }
-
-                            }
+                            username = dtUserName.Rows[0]["UserName"].ToString();
                         }
                     }
                 }
